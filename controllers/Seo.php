@@ -1,10 +1,8 @@
 <?php
 /**
- * Class ExceptionalSeo
+ * Class Exceptional_Seo
  * 
- * The main controller of the plugin
- * 
- * 
+ * The SEO related stuff
  */
 class Exceptional_Seo
 {

@@ -1,7 +1,7 @@
 <?php /*
-  Plugin Name:  Exceptional - SEO
+  Plugin Name:  Exceptional
   Plugin URI:   http://odysonline.gr
-  Description:  Adds the Exceptional - SEO modules
+  Description:  Adds the Exceptional modules
   Version:      0.0.1
   Author:       Odys
   Author URI:   http://odysonline.gr
@@ -19,13 +19,17 @@ class Exceptional_Runtime
         // Eg: When the Exceptional_Seo class is used, it searches for Seo.php inside all the PluginPaths.
         
         // Paths with classes
-        self::$PLUGIN_PATHS = array('/controllers');
+        self::$PLUGIN_PATHS = array('/', '/controllers');
         // register autoloader
         spl_autoload_register(array(__CLASS__, 'Autoloader'));
         
-        // Init plugin
+        // Init modules
         $seo = Exceptional_Seo::Instance();
         $seo->Init();
+        
+        $content = Exceptional_Content::Instance();
+        $content->Init();
+        
     }
 
     public static function Autoloader($class)
