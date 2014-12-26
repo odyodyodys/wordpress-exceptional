@@ -1,15 +1,14 @@
 <?php
 /**
- * Class Exceptional_Content
+ * Class Exceptional_Filtering
  * 
  * Content related stuff
  */
-class Exceptional_Content
+class Exceptional_Filtering
 {
     // fields and properties
     private static $_instance; // singleton instance
     private $_filters; // the filters of the page (the ones that matter to business logic)
-    public function GetFilters(){ return $this->_filters; }
 
     // Constructors
     public function __construct()
@@ -22,7 +21,7 @@ class Exceptional_Content
     {
         if (!self::$_instance)
         {
-            self::$_instance = new Exceptional_Content();
+            self::$_instance = new Exceptional_Filtering();
         }
         return self::$_instance;
     }
@@ -33,25 +32,55 @@ class Exceptional_Content
      */
     public function Init()
     {
-        // TODO Init filters based on $wp_query
+        $this->InitFilters();
     }
     
     /**
+     * Initializes filters
+     */
+    private function InitFilters()
+    {
+        // get data to set to filters
+        $appliedFilters = $this->GetAppliedFilterSlugs();
+        
+        foreach ($this->_filters as $filter)
+        {
+            // set applied filters
+            if (array_key_exists($filter->Slug, $appliedFilters))
+            {                
+                $filter->IsApplied = true;
+                // set applied terms in applied filters
+                foreach ($appliedFilters[$filter->Slug] as $termSlug)
+                {
+                    $tmpTerm = $filter->GetTermBySlug($termSlug);
+                    $tmpTerm->IsApplied = true;
+                }
+            }
+            
+            foreach ($filter->Terms as $term)
+            {
+                $term->Permalink = $this->GetFilterPermalink($filter, $term->Slug);
+            }
+        }
+        
+    }
+
+        /**
      * Registers a filter to be available. Must be called prior to Init
-     * @param Exceptional_Filter $filter A filter to apply.
+     * @param Exceptional_Filter $filter
      */
     public function RegisterFilter($filter)
     {
         $this->_filters[] = $filter;
     }
 
-        /**
+    /**
      * Takes a $taxonomy_slug slug and a taxonomy $term to filter by. It combines terms of the same taxonomy with a plus (+), so WordPress will use an AND operator to combine the terms.
      * @param Exceptional_Filter $filter a Taxonomy slug
-     * @param string $term a taxonomy term
+     * @param string $term a taxonomy term slug
      * @return string Permalink for the filtered/unfiltered content based on this term
      */
-    public function GetFilterPermalink($filter, $term)
+    private function GetFilterPermalink($filter, $term)
     {
         global $wp_query;
 
@@ -97,10 +126,8 @@ class Exceptional_Content
         // Maintain the filters for other taxonomies
         if (isset($wp_query->tax_query))
         {
-
             foreach ($wp_query->tax_query->queries as $query)
             {
-
                 $tax = get_taxonomy($query['taxonomy']);
 
                 // Have we already handled this taxonomy?
@@ -191,45 +218,53 @@ class Exceptional_Content
     /**
      * Returns an array with current applied filters (filterName => array(activeFilterTerms))
      */
-    public function GetAppliedFilters()
+    private function GetAppliedFilterSlugs()
     {
-        // we want to display applied filters (taxonomies and active terms)
+        // we want to find applied filters (taxonomies and active terms)
         // intersect between query vars and registered filters, this will get the taxonomies applied to current page, without having to hardcode taxonomies for each post
         global $wp_query;
         $postTypeTaxonomies = array_values(get_object_taxonomies($wp_query->query['post_type']));
         $queryTerms = array_keys($wp_query->query);
-        $curFilters = array_intersect($postTypeTaxonomies, $queryTerms);
+        $curFilterSlugs = array_intersect($postTypeTaxonomies, $queryTerms);
 
-        // taxonomies with the nicenames of their corresponding terms
-        $filterTerms = array();
-        foreach ($curFilters as $curFilter)
+        // array[taxonomy => array[terms]]
+        $filters = array();
+        foreach ($curFilterSlugs as $curFilter)
         {
             $filterQuery = get_query_var($curFilter);
             if (!empty($filterQuery))
             {
-                $terms = array();
-                $termSlugs = preg_split("/(,|\+)/", $filterQuery);
-                foreach ($termSlugs as $termSlug)
-                {
-                    $term = get_term_by('slug', $termSlug, $curFilter);
-                    $terms[] = array( $term->name, $term->description);
-                }
-
-                // use the filter name if available
-                foreach ($this->_filters as $filter)
-                {
-                    if ($filter->Slug == $filter)
-                    {
-                        $curFilter = $filter->Name;
-                        break;
-                    }
-                }
-                
-                $filterTerms[$curFilter] = $terms;
+                $termSlugs = preg_split('/(,|\+)/', $filterQuery);                                
+                $filters[$curFilter] = $termSlugs;
             }
         }
         
-        return $filterTerms;
+        return $filters;
+    }
+    
+    /**
+     * Returns all filters
+     */
+    public function GetFilters()
+    {
+        return $this->_filters;
+    }
+
+    /**
+     * Returns the applied filters
+     * @return Exceptional_Filter[] Applied filters
+     */
+    public function GetAppliedFilters()
+    {
+        $applied = array();
+        foreach ($this->_filters as $filter)
+        {
+            if ($filter->IsApplied)
+            {
+                $applied[] = $filter;                
+            }
+        }
+        return $applied;
     }
 }
 ?>

@@ -26,10 +26,6 @@ class Exceptional_Runtime
         // Init modules
         $seo = Exceptional_Seo::Instance();
         $seo->Init();
-        
-        $content = Exceptional_Content::Instance();
-        $content->Init();
-        
     }
 
     public static function Autoloader($class)
@@ -46,7 +42,7 @@ class Exceptional_Runtime
         // try to find it in the registered paths
         foreach (self::$PLUGIN_PATHS as $path)
         {
-            // eg Exceptional_Core -> /core/controllers/Core.php
+            // eg Exceptional_Seo -> /controllers/Seo.php
             if (@include plugin_dir_path(__FILE__).$path . '/' . $class . '.php')
             {
                 break;

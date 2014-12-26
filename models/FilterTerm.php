@@ -10,20 +10,16 @@ class Exceptional_FilterTerm
     public $Permalink;
     // If the term is applied (filter is applied with this term and/or others)
     public $IsApplied;
+    public $Name;
+    public $Slug;
+    public $Description;
 
     public function __construct($nativeTerm)
     {
         $this->_nativeTerm = $nativeTerm;
-    }
-
-    public function GetName()
-    {
-        return $this->_nativeTerm->name;
-    }
-    public function GetSlug()
-    {
-        return $this->_nativeTerm->slug;
-    }
-    
+        $this->Name = $nativeTerm->name;
+        $this->Slug = $nativeTerm->slug;
+        $this->Description = $nativeTerm->description;
+    }    
 }
 ?>
