@@ -19,7 +19,7 @@ class Exceptional_Runtime
         // Eg: When the Exceptional_Seo class is used, it searches for Seo.php inside all the PluginPaths.
         
         // Paths with classes
-        self::$PLUGIN_PATHS = array('', 'controllers');
+        self::$PLUGIN_PATHS = array('', 'controllers', 'models');
         // register autoloader
         spl_autoload_register(array(__CLASS__, 'Autoloader'));
         

@@ -6,9 +6,17 @@
  */
 class Exceptional_Content
 {
-    // properties
+    // fields and properties
     private static $_instance; // singleton instance
-    
+    private $_filters; // the filters of the page (the ones that matter to business logic)
+    public function GetFilters(){ return $this->_filters; }
+
+    // Constructors
+    public function __construct()
+    {
+        $this->filters = array();
+    }
+
     // Methods
     public static function Instance()
     {
@@ -19,45 +27,71 @@ class Exceptional_Content
         return self::$_instance;
     }
     
+    /**
+     * Inits the Content to be ready to deliver data
+     * Is called after construct and after data has been set (eg registered filters)
+     */
     public function Init()
     {
-        
+        // TODO Init filters based on $wp_query
     }
     
-    // Takes a $taxonomy_slug slug and a taxonomy $term to filter by. It combines terms of the same taxonomy with a plus (+), so WordPress will use an AND operator to combine the terms.
-    public function GetFilterPermalink($taxonomy_slug, $term)
+    /**
+     * Registers a filter to be available. Must be called prior to Init
+     * @param Exceptional_Filter $filter A filter to apply.
+     */
+    public function RegisterFilter($filter)
+    {
+        $this->_filters[] = $filter;
+    }
+
+        /**
+     * Takes a $taxonomy_slug slug and a taxonomy $term to filter by. It combines terms of the same taxonomy with a plus (+), so WordPress will use an AND operator to combine the terms.
+     * @param Exceptional_Filter $filter a Taxonomy slug
+     * @param string $term a taxonomy term
+     * @return string Permalink for the filtered/unfiltered content based on this term
+     */
+    public function GetFilterPermalink($filter, $term)
     {
         global $wp_query;
 
-        // If there is already a filter running for this taxonomy
-        if (isset($wp_query->query_vars[$taxonomy_slug]))
+        // If there is already a filter running for this taxonomy and the filter isn't single-valued
+        if (isset($wp_query->query_vars[$filter->Slug]) && $filter->Operator != Exceptional_FilterOperator::_SINGLE)
         {
-            // And the term for this URL is not already being used to filter the taxonomy
-            if (strpos($wp_query->query_vars[$taxonomy_slug], $term) === false)
+            // If the term for this URL is not already being used to filter the taxonomy
+            if (strpos($wp_query->query_vars[$filter->Slug], $term) === false)
             {
                 // Append the term
-                $filter_query = $taxonomy_slug . '/' . $wp_query->query_vars[$taxonomy_slug] . '+' . $term;
+                $filter_query = $filter->Slug . '/' . $wp_query->query_vars[$filter->Slug] . $filter->Operator . $term;
             }
             else
             {
                 // Otherwise, remove the term
-                if ($wp_query->query_vars[$taxonomy_slug] == $term)
+                if ($wp_query->query_vars[$filter->Slug] == $term)
                 {
                     $filter_query = '';
                 }
                 else
                 {
-                    $filter = str_replace($term, '', $wp_query->query_vars[$taxonomy_slug]);
-                    // Remove any residual + symbols left behind
-                    $filter = str_replace('++', '+', $filter);
-                    $filter = preg_replace('/(^\+|\+$)/', '', $filter);
-                    $filter_query = $taxonomy_slug . '/' . $filter;
+                    $tmpFilter = str_replace($term, '', $wp_query->query_vars[$filter->Slug]);
+                    // Remove any residual operator symbols left behind
+                    if ($filter->Operator == Exceptional_FilterOperator::_AND)
+                    {
+                        $tmpFilter = str_replace('++', '+', $tmpFilter);
+                        $tmpFilter = preg_replace('/(^\+|\+$)/', '', $tmpFilter);
+                    }
+                    else if ($filter->Operator == Exceptional_FilterOperator::_OR)
+                    {
+                        $tmpFilter = str_replace(',,', ',', $tmpFilter);
+                        $tmpFilter = preg_replace('/(^,|,$)/', '', $tmpFilter);
+                    }
+                    $filter_query = $filter->Slug . '/' . $tmpFilter;
                 }
             }
         }
         else
         {
-            $filter_query = $taxonomy_slug . '/' . $term;
+            $filter_query = $filter->Slug . '/' . $term;
         }
 
         // Maintain the filters for other taxonomies
@@ -70,7 +104,7 @@ class Exceptional_Content
                 $tax = get_taxonomy($query['taxonomy']);
 
                 // Have we already handled this taxonomy?
-                if ($tax->query_var == $taxonomy_slug)
+                if ($tax->query_var == $filter->Slug)
                 {
                     continue;
                 }
@@ -88,7 +122,7 @@ class Exceptional_Content
             $filter_query = $existing_query . $filter_query;
         }
 
-        return trailingslashit(get_post_type_archive_link('eg_event') . $filter_query);
+        return trailingslashit(get_post_type_archive_link($wp_query->query['post_type']) . $filter_query);
     }
     
     /**
@@ -154,5 +188,48 @@ class Exceptional_Content
         return $new_rewrite_rules;
     }
 
+    /**
+     * Returns an array with current applied filters (filterName => array(activeFilterTerms))
+     */
+    public function GetAppliedFilters()
+    {
+        // we want to display applied filters (taxonomies and active terms)
+        // intersect between query vars and registered filters, this will get the taxonomies applied to current page, without having to hardcode taxonomies for each post
+        global $wp_query;
+        $postTypeTaxonomies = array_values(get_object_taxonomies($wp_query->query['post_type']));
+        $queryTerms = array_keys($wp_query->query);
+        $curFilters = array_intersect($postTypeTaxonomies, $queryTerms);
+
+        // taxonomies with the nicenames of their corresponding terms
+        $filterTerms = array();
+        foreach ($curFilters as $curFilter)
+        {
+            $filterQuery = get_query_var($curFilter);
+            if (!empty($filterQuery))
+            {
+                $terms = array();
+                $termSlugs = preg_split("/(,|\+)/", $filterQuery);
+                foreach ($termSlugs as $termSlug)
+                {
+                    $term = get_term_by('slug', $termSlug, $curFilter);
+                    $terms[] = array( $term->name, $term->description);
+                }
+
+                // use the filter name if available
+                foreach ($this->_filters as $filter)
+                {
+                    if ($filter->Slug == $filter)
+                    {
+                        $curFilter = $filter->Name;
+                        break;
+                    }
+                }
+                
+                $filterTerms[$curFilter] = $terms;
+            }
+        }
+        
+        return $filterTerms;
+    }
 }
 ?>
