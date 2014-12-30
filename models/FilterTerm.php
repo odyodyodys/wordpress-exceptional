@@ -20,6 +20,7 @@ class Exceptional_FilterTerm
         $this->Name = $nativeTerm->name;
         $this->Slug = $nativeTerm->slug;
         $this->Description = $nativeTerm->description;
+        $this->IsApplied = false;
     }    
 }
 ?>

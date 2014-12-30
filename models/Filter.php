@@ -38,16 +38,31 @@ class Exceptional_Filter
         $this->Slug = $slug;
         $this->Name = $name;
         $this->Operator = $operator;
+        $this->IsApplied = false;
         
         // init my terms
         $this->Terms = array();
-        foreach (get_terms($slug) as $term)
+        $terms = get_terms($slug);
+        foreach ($terms as $term)
         {
             $this->Terms[] = new Exceptional_FilterTerm($term);
         }
     }
     
     // METHODS
+    
+    /**
+     * Clone the filter. Also clones its terms and is safe to be manipulated.
+     */    
+    function __clone()
+    {
+        $newTerms = array();
+        foreach ($this->Terms as $term)
+        {
+            $newTerms[] = clone $term;
+        }
+        $this->Terms = $newTerms;
+    }
     
     /**
      * Returns a term of the filter based on its slug
@@ -82,5 +97,58 @@ class Exceptional_Filter
         }
         return $applied;
     }
+    
+    /**
+     * Marks a term of the filter as applied
+     * @param string $termSlug Slug of the term to set as applied
+     */
+    public function SetTermApplied($termSlug, $isApplied)
+    {    
+        foreach ($this->Terms as $term)
+        {
+            if ($term->Slug == $termSlug)
+            {
+                $term->IsApplied = $isApplied;
+            }
+            else if ($this->Operator == Exceptional_FilterOperator::_SINGLE)
+            {
+                $term->IsApplied = false;
+            }
+        }
+        
+        // if a term is applied, the filter must be applied too
+        if ($isApplied == true)
+        {
+            $this->IsApplied = true;
+        }
+    }
+    
+    /**
+     * Gets the url part for this filter (Eg: taxonomy/term1,term2/)
+     * If the filter is not applied, an empty string is returned
+     */
+    public function GetFilterUrl()
+    {
+        $url = '';
+        if ($this->IsApplied)
+        {
+            $appliedTerms = array();
+            foreach ($this->Terms as $term)
+            {
+                if (!$term->IsApplied)
+                {
+                    continue;              
+                }
+                
+                $appliedTerms[] = $term->Slug;
+            }
+            
+            if (!empty($appliedTerms))
+            {
+                $url = $this->Slug .'/'. implode($this->Operator, $appliedTerms).'/';
+            }
+        }
+        
+        return $url;
+    }
 }
-?>

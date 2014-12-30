@@ -19,7 +19,7 @@ class Exceptional_Runtime
         // Eg: When the Exceptional_Seo class is used, it searches for Seo.php inside all the PluginPaths.
         
         // Paths with classes
-        self::$PLUGIN_PATHS = array('', 'controllers', 'models');
+        self::$PLUGIN_PATHS = array('', 'controllers', 'models', 'views/templates');
         // register autoloader
         spl_autoload_register(array(__CLASS__, 'Autoloader'));
         
@@ -36,14 +36,14 @@ class Exceptional_Runtime
             return;
         }
 
-        // remove the prefix to get the filename
-        $class = str_replace('Exceptional_', '', $class);
-
         // try to find it in the registered paths
+        $basePath = plugin_dir_path(__FILE__);
+        // remove the prefix to get the class filename
+        $classFile = str_replace('Exceptional_', '', $class). '.php';
         foreach (self::$PLUGIN_PATHS as $path)
         {
             // eg Exceptional_Seo -> /controllers/Seo.php
-            if (@include plugin_dir_path(__FILE__).$path . '/' . $class . '.php')
+            if (@include $basePath.$path.'/'. $classFile )
             {
                 break;
             }

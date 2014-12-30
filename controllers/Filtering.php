@@ -9,6 +9,12 @@ class Exceptional_Filtering
     // fields and properties
     private static $_instance; // singleton instance
     private $_filters; // the filters of the page (the ones that matter to business logic)
+    
+    /**
+     *
+     * @var Exceptional_Theme_FilteringBasic The template class to use for displaying the filters 
+     */
+    private static $_template;
 
     // Constructors
     public function __construct()
@@ -32,6 +38,13 @@ class Exceptional_Filtering
      */
     public function Init()
     {
+        // check template engine is set
+        if (!isset(self::$_template))
+        {
+            // TODO inform admin with an error
+        }
+        
+        // init filters
         $this->InitFilters();
     }
     
@@ -42,18 +55,16 @@ class Exceptional_Filtering
     {
         // get data to set to filters
         $appliedFilters = $this->GetAppliedFilterSlugs();
-        
         foreach ($this->_filters as $filter)
         {
             // set applied filters
             if (array_key_exists($filter->Slug, $appliedFilters))
-            {                
+            {
                 $filter->IsApplied = true;
                 // set applied terms in applied filters
                 foreach ($appliedFilters[$filter->Slug] as $termSlug)
                 {
-                    $tmpTerm = $filter->GetTermBySlug($termSlug);
-                    $tmpTerm->IsApplied = true;
+                    $filter->SetTermApplied($termSlug, true);
                 }
             }
             
@@ -61,11 +72,19 @@ class Exceptional_Filtering
             {
                 $term->Permalink = $this->GetFilterPermalink($filter, $term->Slug);
             }
-        }
-        
+        }        
+    }
+    
+    /**
+     * Sets the template engine tha will be used for rendering
+     * @param Exceptional_Theme_FilteringBasic $template
+     */
+    public function SetTemplateEngine($template)
+    {
+        self::$_template = $template;
     }
 
-        /**
+    /**
      * Registers a filter to be available. Must be called prior to Init
      * @param Exceptional_Filter $filter
      */
@@ -84,69 +103,26 @@ class Exceptional_Filtering
     {
         global $wp_query;
 
-        // If there is already a filter running for this taxonomy and the filter isn't single-valued
-        if (isset($wp_query->query_vars[$filter->Slug]) && $filter->Operator != Exceptional_FilterOperator::_SINGLE)
+        // Clone filter, set term as applied
+        $newFilter = clone $filter;
+        $curTerm = $newFilter->GetTermBySlug($term);
+        $newFilter->SetTermApplied($term, !$curTerm->IsApplied);
+        
+        // combine urls for all filters
+        $existingQuery = '';
+        foreach ($this->_filters as $tmpFilter)
         {
-            // If the term for this URL is not already being used to filter the taxonomy
-            if (strpos($wp_query->query_vars[$filter->Slug], $term) === false)
+            if ($tmpFilter->Slug == $newFilter->Slug)
             {
-                // Append the term
-                $filter_query = $filter->Slug . '/' . $wp_query->query_vars[$filter->Slug] . $filter->Operator . $term;
+                $tmpFilter = $newFilter;
             }
-            else
-            {
-                // Otherwise, remove the term
-                if ($wp_query->query_vars[$filter->Slug] == $term)
-                {
-                    $filter_query = '';
-                }
-                else
-                {
-                    $tmpFilter = str_replace($term, '', $wp_query->query_vars[$filter->Slug]);
-                    // Remove any residual operator symbols left behind
-                    if ($filter->Operator == Exceptional_FilterOperator::_AND)
-                    {
-                        $tmpFilter = str_replace('++', '+', $tmpFilter);
-                        $tmpFilter = preg_replace('/(^\+|\+$)/', '', $tmpFilter);
-                    }
-                    else if ($filter->Operator == Exceptional_FilterOperator::_OR)
-                    {
-                        $tmpFilter = str_replace(',,', ',', $tmpFilter);
-                        $tmpFilter = preg_replace('/(^,|,$)/', '', $tmpFilter);
-                    }
-                    $filter_query = $filter->Slug . '/' . $tmpFilter;
-                }
-            }
-        }
-        else
-        {
-            $filter_query = $filter->Slug . '/' . $term;
+            
+            $existingQuery .= $tmpFilter->GetFilterUrl();
         }
 
-        // Maintain the filters for other taxonomies
-        if (isset($wp_query->tax_query))
+        if (!empty($existingQuery))
         {
-            foreach ($wp_query->tax_query->queries as $query)
-            {
-                $tax = get_taxonomy($query['taxonomy']);
-
-                // Have we already handled this taxonomy?
-                if ($tax->query_var == $filter->Slug)
-                {
-                    continue;
-                }
-
-                // Make sure taxonomy hasn't already been added to query string
-                if (strpos($existing_query, $tax->query_var) === false)
-                {
-                    $existing_query .= $tax->query_var . '/' . $wp_query->query_vars[$tax->query_var] . '/';
-                }
-            }
-        }
-
-        if (isset($existing_query))
-        {
-            $filter_query = $existing_query . $filter_query;
+            $filter_query = $existingQuery . $filter_query;
         }
 
         return trailingslashit(get_post_type_archive_link($wp_query->query['post_type']) . $filter_query);
@@ -265,6 +241,22 @@ class Exceptional_Filtering
             }
         }
         return $applied;
+    }
+    
+    /**
+     * Displays the applied filters using the registered template engine
+     */
+    public function DisplayAppliedFilters()
+    {
+        self::$_template->DisplayAppliedFilters($this->GetAppliedFilters());
+    }
+    
+    /**
+     * Displays the filtering panel using the registered template engine
+     */
+    public function DisplayFilteringPanel()
+    {
+        self::$_template->DisplayFilteringPanel($this->_filters);
     }
 }
 ?>
