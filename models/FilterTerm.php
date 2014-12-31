@@ -16,7 +16,7 @@ class Exceptional_FilterTerm
 
     public function __construct($nativeTerm)
     {
-        $this->_nativeTerm = $nativeTerm;
+        $this->_nativeTerm = &$nativeTerm;
         $this->Name = $nativeTerm->name;
         $this->Slug = $nativeTerm->slug;
         $this->Description = $nativeTerm->description;

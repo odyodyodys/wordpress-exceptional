@@ -9,6 +9,12 @@ class Exceptional_Seo
     // Variables
     private static $_instance; // singleton instance
 
+    // constructors
+    private function __construct()
+    {
+        
+    }
+
     // Methods
     public static function Instance()
     {

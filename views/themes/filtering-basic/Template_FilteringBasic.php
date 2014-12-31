@@ -4,6 +4,15 @@
  */
 class Exceptional_Template_FilteringBasic extends Exceptional_FilteringTemplateEngine
 {
+    public function __construct()
+    {
+        parent::__construct();
+        
+        $myPath = plugin_dir_url(__FILE__);
+        $this->RegisterStyle($myPath.'styles.css');
+        $this->RegisterScript($myPath.'scripts.js');
+    }
+    
     public function DisplayFilteringPanel($filters)
     {?>
         <ul class="filters"><?php                
