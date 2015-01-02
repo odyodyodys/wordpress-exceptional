@@ -21,6 +21,11 @@ class Exceptional_FilterTerm
         $this->Slug = $nativeTerm->slug;
         $this->Description = $nativeTerm->description;
         $this->IsApplied = false;
-    }    
+    }
+    
+    public function GetClass()
+    {
+        return 'term term-'.$this->Slug.($this->IsApplied? ' applied': '');
+    }
 }
 ?>

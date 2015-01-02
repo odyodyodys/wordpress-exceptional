@@ -151,4 +151,12 @@ class Exceptional_Filter
         
         return $url;
     }
+    
+    /**
+     * Gets the css class of the filter
+     */
+    public function GetClass()
+    {
+        return 'filter filter-'.$this->Slug.' '.Exceptional_FilterOperator::GetClass($this->Operator);
+    }
 }

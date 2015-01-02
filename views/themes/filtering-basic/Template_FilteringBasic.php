@@ -13,16 +13,20 @@ class Exceptional_Template_FilteringBasic extends Exceptional_FilteringTemplateE
         $this->RegisterScript($myPath.'scripts.js');
     }
     
+    /**
+     * Displays the filtering panel
+     * @param Exceptional_Filter[] $filters The available filters
+     */
     public function DisplayFilteringPanel($filters)
     {?>
         <ul class="filters"><?php                
             foreach ($filters as $filter):?>
-                <li class="filter"><?php
-                    echo $filter->Name;?>
+                <li class="<?php echo $filter->GetClass() ?>">
+                    <h3><?php echo $filter->Name;?></h3>
                     <ul class="terms"><?php
                     foreach ($filter->Terms as $term):?>
-                        <li class="term"><a href="<?php echo $term->Permalink; ?>"><?php
-                            echo ($term->IsApplied?'-':'+'). $term->Name;?>
+                        <li class="<?php echo $term->GetClass(); ?>"><a href="<?php echo $term->Permalink; ?>"><?php
+                            echo $term->Name;?>
                         </a></li><?php
                     endforeach;?>
                     </ul>
@@ -32,6 +36,10 @@ class Exceptional_Template_FilteringBasic extends Exceptional_FilteringTemplateE
         </ul><?php
     }
 
+    /**
+     * Displays the currently applied filters
+     * @param Exceptional_Filter[] $appliedFilters The filters currently applied
+     */
     public function DisplayAppliedFilters($appliedFilters)
     {
         if (!empty($appliedFilters)):?>
