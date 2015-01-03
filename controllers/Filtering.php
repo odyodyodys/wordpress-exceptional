@@ -108,7 +108,7 @@ class Exceptional_Filtering
         $curTerm = $newFilter->GetTermBySlug($term);
         $newFilter->SetTermApplied($term, !$curTerm->IsApplied);
         
-        // combine urls for all filters
+        // combine urls of all filters
         $existingQuery = '';
         foreach ($this->_filters as $tmpFilter)
         {

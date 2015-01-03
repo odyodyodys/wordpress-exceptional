@@ -1,1 +1,4 @@
-body{background: red;}
+.filters{list-style: none; margin: 0;}
+    .filter h3{font-size: 1.3em;}
+        .terms{list-style: none; }
+            .term a, .term a:hover, .term a:active, .term a:focus{ text-decoration: none; outline: 0; }

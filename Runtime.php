@@ -100,6 +100,7 @@ class Exceptional_Runtime
             // eg Exceptional_Seo -> /controllers/Seo.php
             if (@include self::$BASE_PATH.$path.$classFile )
             {
+                // found and included. job is done
                 break;
             }
         }
