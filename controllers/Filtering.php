@@ -67,12 +67,15 @@ class Exceptional_Filtering
                     $filter->SetTermApplied($termSlug, true);
                 }
             }
-            
+        }
+        
+        foreach ($this->_filters as $filter)
+        {
             foreach ($filter->Terms as $term)
             {
                 $term->Permalink = $this->GetFilterPermalink($filter, $term->Slug);
             }
-        }        
+        }
     }
     
     /**

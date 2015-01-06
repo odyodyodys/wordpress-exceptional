@@ -42,7 +42,7 @@ class Exceptional_Filter
         
         // init my terms
         $this->Terms = array();
-        $terms = get_terms($slug);
+        $terms = get_terms($slug, array('get' => 'all'));
         foreach ($terms as $term)
         {
             $this->Terms[] = new Exceptional_FilterTerm($term);
