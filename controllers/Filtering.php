@@ -2,7 +2,7 @@
 /**
  * Class Exceptional_Filtering
  * 
- * Content related stuff
+ * Filtering controller
  */
 class Exceptional_Filtering
 {
@@ -11,8 +11,7 @@ class Exceptional_Filtering
     private $_filters; // the filters of the page (the ones that matter to business logic)
     
     /**
-     *
-     * @var Exceptional_Theme_FilteringBasic The template class to use for displaying the filters 
+     * @var Exceptional_FilteringTemplateEngine The template class to use for displaying the filters 
      */
     private static $_template;
 
@@ -33,7 +32,7 @@ class Exceptional_Filtering
     }
     
     /**
-     * Inits the Content to be ready to deliver data
+     * Inits the Filtering to be ready to deliver data
      * Is called after construct and after data has been set (eg registered filters)
      */
     public function Init()

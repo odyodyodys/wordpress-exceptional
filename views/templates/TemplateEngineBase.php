@@ -27,14 +27,14 @@ abstract class Exceptional_TemplateEngineBase
     }
 
     // METHODS
-    protected function RegisterScript($script)
+    protected function RegisterScript($script, $depedencies = array(), $version = false, $in_footer = false)
     {
-        $this->_scripts[] = $script;
+        $this->_scripts[] = array($script, $depedencies, $version, $in_footer);
     }
     
-    protected function RegisterStyle($style)
+    protected function RegisterStyle($style, $depedencies = array(), $version = false, $media = 'all')
     {
-        $this->_styles[] = $style;
+        $this->_styles[] = array($style, $depedencies, $version, $media);
     }
     
     public function GetScripts()

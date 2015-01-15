@@ -72,14 +72,14 @@ class Exceptional_Runtime
             // resources will get included once only.
             $i = 1;
             $templateClass = get_class($template);
-            foreach ($template->GetScripts() as $script)
+            foreach ($template->GetScripts() as $scriptData)
             {
-                wp_enqueue_script($templateClass.$i++, $script);
+                wp_enqueue_script($templateClass.$i++, $scriptData[0], $scriptData[1], $scriptData[2], $scriptData[3]);
             }
             $i = 1;
-            foreach ($template->GetStyles() as $style)
+            foreach ($template->GetStyles() as $styleData)
             {
-                wp_enqueue_style($templateClass.$i++, $style);
+                wp_enqueue_style($templateClass.$i++, $styleData[0], $styleData[1], $styleData[2], $styleData[3]);
             }
         }
     }
