@@ -198,16 +198,14 @@ class Exceptional_Filtering
      */
     private function GetAppliedFilterSlugs()
     {
-        // we want to find applied filters (taxonomies and active terms)
-        // intersect between query vars and registered filters, this will get the taxonomies applied to current page, without having to hardcode taxonomies for each post
+        // we want to find applied terms in filters (taxonomies and active terms)
+        // get if from query vars 
         global $wp_query;
-        $postTypeTaxonomies = array_values(get_object_taxonomies($wp_query->query['post_type']));
         $queryTerms = array_keys($wp_query->query);
-        $curFilterSlugs = array_intersect($postTypeTaxonomies, $queryTerms);
 
         // array[taxonomy => array[terms]]
         $filters = array();
-        foreach ($curFilterSlugs as $curFilter)
+        foreach ($queryTerms as $curFilter)
         {
             $filterQuery = get_query_var($curFilter);
             if (!empty($filterQuery))
@@ -237,7 +235,7 @@ class Exceptional_Filtering
         $applied = array();
         foreach ($this->_filters as $filter)
         {
-            if ($filter->IsApplied)
+            if ($filter->IsApplied && $filter->IsPublic)
             {
                 $applied[] = $filter;                
             }
@@ -258,7 +256,17 @@ class Exceptional_Filtering
      */
     public function DisplayFilteringPanel()
     {
-        self::$_template->DisplayFilteringPanel($this->_filters);
+        // create a list with all public filters
+        $publicFilters = array();
+        foreach ($this->_filters as $filter)
+        {
+            if ($filter->IsPublic)
+            {
+                $publicFilters[] = $filter;
+            }
+        }
+        
+        self::$_template->DisplayFilteringPanel($publicFilters);
     }
 }
 ?>

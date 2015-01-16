@@ -14,12 +14,16 @@ class Exceptional_FilterTerm
     public $Slug;
     public $Description;
 
-    public function __construct($nativeTerm)
+    public function __construct($nativeTerm = NULL)
     {
-        $this->_nativeTerm = &$nativeTerm;
-        $this->Name = $nativeTerm->name;
-        $this->Slug = $nativeTerm->slug;
-        $this->Description = $nativeTerm->description;
+        if (!is_null($nativeTerm))
+        {
+            $this->_nativeTerm = &$nativeTerm;
+            $this->Name = $nativeTerm->name;
+            $this->Slug = $nativeTerm->slug;
+            $this->Description = $nativeTerm->description;
+        }
+        
         $this->IsApplied = false;
     }
     

@@ -25,6 +25,12 @@ class Exceptional_Filter
      * @var bool If the filter is currently applied
      */
     public $IsApplied;
+    
+    /**
+     * If a filter is not active it doesn't appear when displaying filters, nor its terms are enumerated
+     * @var bool Is public
+     */
+    public $IsPublic;
 
     /**
      * Constructor
@@ -32,12 +38,14 @@ class Exceptional_Filter
      * @param string $name The nice name of the filter
      * @param array $terms Array of Exceptional_FilterTerm that are the terms of this filter
      * @param Exceptional_FilterOperator $operator The operator that is applied to the terms of this filter
+     * @param bool $isPublic If a filter is public or not
      */
-    public function __construct($slug, $name, $operator = Exceptional_FilterOperator::_OR)
+    public function __construct($slug, $name, $operator = Exceptional_FilterOperator::_OR, $isPublic = true)
     {
         $this->Slug = $slug;
         $this->Name = $name;
         $this->Operator = $operator;
+        $this->IsPublic = $isPublic;
         $this->IsApplied = false;
         
         // init my terms
@@ -103,17 +111,30 @@ class Exceptional_Filter
      * @param string $termSlug Slug of the term to set as applied
      */
     public function SetTermApplied($termSlug, $isApplied)
-    {    
-        foreach ($this->Terms as $term)
+    {
+        if (!empty($this->Terms))
         {
-            if ($term->Slug == $termSlug)
+            foreach ($this->Terms as $term)
             {
-                $term->IsApplied = $isApplied;
+                if ($term->Slug == $termSlug)
+                {
+                    $term->IsApplied = $isApplied;
+                }
+                else if ($this->Operator == Exceptional_FilterOperator::_SINGLE)
+                {
+                    // we mustn't break when term is found. It is also needed to set all other terms as not applied
+                    $term->IsApplied = false;
+                }
             }
-            else if ($this->Operator == Exceptional_FilterOperator::_SINGLE)
-            {
-                $term->IsApplied = false;
-            }
+        }
+        else
+        {
+            // filter has no terms (its dummy or problematic). Create a dummy term to support it manually
+            // Note that only one dummy term can exist
+            $term = new Exceptional_FilterTerm();
+            $term->Slug = $termSlug;
+            $term->IsApplied = $isApplied;
+            $this->Terms[] = $term;
         }
         
         // if a term is applied, the filter must be applied too
