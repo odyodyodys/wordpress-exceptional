@@ -6,13 +6,23 @@ class Exceptional_Filter
 {
     // FIELDS & PROPERTIES
     
+    /**
+     * @var string The taxonomy name
+     */
+    public $Taxonomy;
+    
+    /**
+     *
+     * @var string The slug of the taxonomy. Can be different from Taxonomy using rewrite rules (ugly taxonomy name can be pretty)
+     */
     public $Slug;
+
     /**
      * @var string the nice name of the filter
      */
     public $Name;
+
     /**
-     *
      * @var Exceptional_FilterTerm[] Terms of the filter 
      */
     public $Terms;
@@ -34,23 +44,25 @@ class Exceptional_Filter
 
     /**
      * Constructor
-     * @param string $slug The slug of the filter
+     * @param string $taxonomy The taxonomy of the filter
      * @param string $name The nice name of the filter
      * @param array $terms Array of Exceptional_FilterTerm that are the terms of this filter
      * @param Exceptional_FilterOperator $operator The operator that is applied to the terms of this filter
      * @param bool $isPublic If a filter is public or not
+     * @param string $slug The url representation of the taxonomy
      */
-    public function __construct($slug, $name, $operator = Exceptional_FilterOperator::_OR, $isPublic = true)
+    public function __construct($taxonomy, $name, $operator = Exceptional_FilterOperator::_OR, $isPublic = true, $slug = '')
     {
-        $this->Slug = $slug;
+        $this->Taxonomy = $taxonomy;
         $this->Name = $name;
         $this->Operator = $operator;
         $this->IsPublic = $isPublic;
         $this->IsApplied = false;
+        $this->Slug = empty($slug) ? $taxonomy : $slug;
         
         // init my terms
         $this->Terms = array();
-        $terms = get_terms($slug, array('get' => 'all'));
+        $terms = get_terms($taxonomy, array('get' => 'all'));
         foreach ($terms as $term)
         {
             $this->Terms[] = new Exceptional_FilterTerm($term);
@@ -146,7 +158,10 @@ class Exceptional_Filter
     
     /**
      * Gets the url part for this filter (Eg: taxonomy/term1,term2/)
+     * It is used to retain the applied filter terms for other filters.
      * If the filter is not applied, an empty string is returned
+     * eg: Filter color has red+blue and filter size wants to filter by size. It needs to retain the color terms
+     * otherwise the size filter will only filter by size, without combining with the color filter.
      */
     public function GetFilterUrl()
     {
@@ -178,6 +193,6 @@ class Exceptional_Filter
      */
     public function GetClass()
     {
-        return 'filter filter-'.$this->Slug.' '.Exceptional_FilterOperator::GetClass($this->Operator);
+        return 'filter filter-'.$this->Taxonomy.' '.Exceptional_FilterOperator::GetClass($this->Operator);
     }
 }

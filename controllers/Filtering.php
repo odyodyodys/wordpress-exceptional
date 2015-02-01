@@ -6,16 +6,48 @@
  */
 class Exceptional_Filtering
 {
-    // fields and properties
-    private static $_instance; // singleton instance
-    private $_filters; // the filters of the page (the ones that matter to business logic)
+    // FILTERS & PROPERTIES
+    
+    /**
+     * @var Exceptional_Filtering The singleton instance 
+     */
+    private static $_instance;
+    
+    /**
+     * @var Exceptional_Filter[] the filters of the page (the ones that matter to business logic)
+     */
+    private $_filters;
     
     /**
      * @var Exceptional_FilteringTemplateEngine The template class to use for displaying the filters 
      */
     private static $_template;
+    
+    /**
+     * @var array[] Query vars that are needed to be retained (eg. sorting )
+     */
+    private static $_retainedVars;
+    
+    /**
+     * Similar to the category/tag base in Settings->Permalink. It is the base where all urls are applied
+     * eg: for 'topics' the filters would be example.com/topics/filter1/term1/filter2/term2,term3
+     * This must be set before calling Init()
+     * @var string The base url
+     */
+    public $BaseUrl;
 
     // Constructors
+    /**
+     * Static constructor. Gets called after class decleration (bottom of this file)
+     */
+    public static function __constructStatic()
+    {
+        self::$_retainedVars = array();
+    }
+
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         $this->filters = array();
@@ -57,11 +89,11 @@ class Exceptional_Filtering
         foreach ($this->_filters as $filter)
         {
             // set applied filters
-            if (array_key_exists($filter->Slug, $appliedFilters))
+            if (array_key_exists($filter->Taxonomy, $appliedFilters))
             {
                 $filter->IsApplied = true;
                 // set applied terms in applied filters
-                foreach ($appliedFilters[$filter->Slug] as $termSlug)
+                foreach ($appliedFilters[$filter->Taxonomy] as $termSlug)
                 {
                     $filter->SetTermApplied($termSlug, true);
                 }
@@ -94,6 +126,19 @@ class Exceptional_Filtering
     {
         $this->_filters[] = $filter;
     }
+    
+    /**
+     * @param string $var The url variable to be retained in filter permalinks
+     */
+    public static function RegisterRetainedQueryVar($var)
+    {
+        if (!isset(self::$_retainedVars))
+        {
+            self::$_retainedVars = array();
+        }
+        
+        self::$_retainedVars[] = $var;        
+    }
 
     /**
      * Takes a $taxonomy_slug slug and a taxonomy $term to filter by. It combines terms of the same taxonomy with a plus (+), so WordPress will use an AND operator to combine the terms.
@@ -111,7 +156,7 @@ class Exceptional_Filtering
         $newFilter->SetTermApplied($term, !$curTerm->IsApplied);
         
         // combine urls of all filters
-        $existingQuery = '';
+        $filter_query = '/';
         foreach ($this->_filters as $tmpFilter)
         {
             if ($tmpFilter->Slug == $newFilter->Slug)
@@ -119,15 +164,44 @@ class Exceptional_Filtering
                 $tmpFilter = $newFilter;
             }
             
-            $existingQuery .= $tmpFilter->GetFilterUrl();
+            $filter_query .= $tmpFilter->GetFilterUrl();
         }
 
-        if (!empty($existingQuery))
+        // append retained variables (eg  ?var1=value1&var2=value2
+        global $wp_query;
+        $varSets = array();
+        foreach (self::$_retainedVars as $var)
         {
-            $filter_query = $existingQuery . $filter_query;
+            $userValue = $wp_query->query[$var];
+            $value = $wp_query->get($var);
+            if (isset($userValue))
+            {
+                $varSets[] = $var.'='.$userValue;
+            }
+            else if (!(empty($value) && $value !== '0'))
+            {
+                $varSets[] = $var.'='.$value;
+            }
         }
-
-        return trailingslashit(get_post_type_archive_link($wp_query->query['post_type']) . $filter_query);
+        
+        // bulk query vars
+        if (!empty($varSets))
+        {
+            $retainedQueryVars = '?'.implode('&', $varSets);
+        }
+        
+        // url base
+        if (is_post_type_archive())
+        {
+            $base = get_post_type_archive_link($wp_query->query['post_type']);
+        }
+        else
+        {
+            $base = home_url($this->BaseUrl);
+        }
+        
+        
+        return trailingslashit($base . $filter_query).$retainedQueryVars;
     }
     
     /**
@@ -215,6 +289,8 @@ class Exceptional_Filtering
             }
         }
         
+        WP_Query::get('min_price');
+        
         return $filters;
     }
     
@@ -269,4 +345,5 @@ class Exceptional_Filtering
         self::$_template->DisplayFilteringPanel($publicFilters);
     }
 }
+Exceptional_Filtering::__constructStatic();
 ?>
