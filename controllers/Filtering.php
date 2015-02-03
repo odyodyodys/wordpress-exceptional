@@ -142,12 +142,12 @@ class Exceptional_Filtering
 
     /**
      * Takes a $taxonomy_slug slug and a taxonomy $term to filter by. It combines terms of the same taxonomy with a plus (+), so WordPress will use an AND operator to combine the terms.
-     * @param Exceptional_Filter $filter a Taxonomy slug
+     * @param Exceptional_Filter|string $filter a Filter
      * @param string $term a taxonomy term slug
      * @return string Permalink for the filtered/unfiltered content based on this term
      */
     private function GetFilterPermalink($filter, $term)
-    {
+    {        
         global $wp_query;
 
         // Clone filter, set term as applied

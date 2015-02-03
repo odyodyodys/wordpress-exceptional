@@ -40,8 +40,8 @@ class Exceptional_Runtime
         // register autoloader
         spl_autoload_register(array(__CLASS__, 'Autoloader'));
         
-        // init self
-        add_filter('init', array($this, 'Init'), 11);
+        // init self as delayed as possible
+        add_filter('get_header', array($this, 'Init'), 11);
         
         // init modules
         $seo = Exceptional_Seo::Instance();
