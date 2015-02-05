@@ -82,7 +82,7 @@ class Exceptional_Seo
         }
 
         // replaces non allowed chars into spaces
-        $str = preg_replace('/[^a-z0-9' . implode('', $chars) . ']/ui', ' ', $str);
+        $str = preg_replace('/[^_a-z0-9' . implode('', $chars) . ']/ui', ' ', $str);
 
         // delete remaining spaces
         $str = preg_replace('/\s+/', $sep, str_replace('+', ' ', $str));
