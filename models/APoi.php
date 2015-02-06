@@ -5,6 +5,7 @@
  */
 abstract class Exceptional_APoi
 {
+    public abstract function GetId();
     public abstract function GetIcon();
     public abstract function GetLat();
     public abstract function GetLong();
