@@ -172,14 +172,9 @@ class Exceptional_Filtering
         $varSets = array();
         foreach (self::$_retainedVars as $var)
         {
-            $userValue = $wp_query->query[$var];
-            $value = $wp_query->get($var);
-            if (isset($userValue))
+            if (array_key_exists($var, $_GET))
             {
-                $varSets[] = $var.'='.$userValue;
-            }
-            else if (!(empty($value) && $value !== '0'))
-            {
+                $value = $_GET[$var];
                 $varSets[] = $var.'='.$value;
             }
         }
@@ -201,7 +196,7 @@ class Exceptional_Filtering
         }
         
         
-        return trailingslashit($base . $filter_query).$retainedQueryVars;
+        return trailingslashit(untrailingslashit($base) . $filter_query).$retainedQueryVars;
     }
     
     /**
@@ -282,14 +277,12 @@ class Exceptional_Filtering
         foreach ($queryTerms as $curFilter)
         {
             $filterQuery = get_query_var($curFilter);
-            if (!empty($filterQuery))
+            if (!empty($filterQuery) && is_string($filterQuery))
             {
                 $termSlugs = preg_split('/(,|\+)/', $filterQuery);                                
                 $filters[$curFilter] = $termSlugs;
             }
         }
-        
-        WP_Query::get('min_price');
         
         return $filters;
     }
