@@ -35,7 +35,7 @@ class Exceptional_Runtime
         // Eg: When the Exceptional_Seo class is used, it searches for Seo.php inside all the PluginPaths.
         
         // Paths with classes sorted as most used to less used to optimize search speed
-        self::$PLUGIN_PATHS = array('controllers/', 'models/', 'views/templates/', '/');
+        self::$PLUGIN_PATHS = array('controllers/', 'models/', 'utils/', 'views/templates/', '/');
         self::$BASE_PATH = plugin_dir_path(__FILE__);
         // register autoloader
         spl_autoload_register(array(__CLASS__, 'Autoloader'));
