@@ -73,6 +73,7 @@ class Exceptional_Filtering
         if (!isset(self::$_template))
         {
             // TODO inform admin with an error
+            var_dump('Error');
         }
         
         // init filters
@@ -88,16 +89,7 @@ class Exceptional_Filtering
         $appliedFilters = $this->GetAppliedFilterSlugs();
         foreach ($this->_filters as $filter)
         {
-            // set applied filters
-            if (array_key_exists($filter->Taxonomy, $appliedFilters))
-            {
-                $filter->IsApplied = true;
-                // set applied terms in applied filters
-                foreach ($appliedFilters[$filter->Taxonomy] as $termSlug)
-                {
-                    $filter->SetTermApplied($termSlug, true);
-                }
-            }
+            $filter->InitAppliedTerms($appliedFilters);
         }
         
         foreach ($this->_filters as $filter)

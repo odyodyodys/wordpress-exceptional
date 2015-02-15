@@ -64,7 +64,10 @@ abstract class Exceptional_AFilter
     /**
      * Gets the css class of the filter
      */
-    public abstract function GetClass();
+    public function GetClass()
+    {
+        return 'filter filter-'.$this->Slug.' '.Exceptional_FilterOperator::GetClass($this->Operator);
+    }
 
     /**
      * Returns the terms that are applied to the filter
@@ -100,6 +103,24 @@ abstract class Exceptional_AFilter
         return $term;
     }
     
+    /**
+     * Sets which terms are applied based on the applied terms
+     * @param array $appliedFilters
+     */
+    public function InitAppliedTerms(array $appliedFilters)
+    {
+        // set applied filters
+        if (array_key_exists($this->Slug, $appliedFilters))
+        {
+            $this->IsApplied = true;
+            // set applied terms in applied filters
+            foreach ($appliedFilters[$this->Slug] as $termSlug)
+            {
+                $this->SetTermApplied($termSlug, true);
+            }
+        }
+    }
+
     /**
      * Marks a term of the filter as applied
      * @param string $termSlug Slug of the term to set as applied
@@ -148,13 +169,13 @@ abstract class Exceptional_AFilter
                 
                 $appliedTerms[] = $term->Slug;
             }
-            
+                        
             if (!empty($appliedTerms))
             {
                 $url = $this->Slug .'/'. implode($this->Operator, $appliedTerms).'/';
             }
         }
-        
+
         return $url;
     }
 }

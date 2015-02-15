@@ -34,6 +34,20 @@ class Exceptional_TaxonomyFilter extends Exceptional_AFilter
         }
     }
     
+    public function InitAppliedTerms(array $appliedFilters)
+    {
+        // set applied filters
+        if (array_key_exists($this->Taxonomy, $appliedFilters))
+        {
+            $this->IsApplied = true;
+            // set applied terms in applied filters
+            foreach ($appliedFilters[$this->Taxonomy] as $termSlug)
+            {
+                $this->SetTermApplied($termSlug, true);
+            }
+        }
+    }
+    
     /**
      * Gets the css class of the filter
      */

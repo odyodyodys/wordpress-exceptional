@@ -23,6 +23,8 @@ abstract class Exceptional_AFilterTerm
     /**
      * The css class for this term
      */
-    public abstract function GetClass();
-    
+    public function GetClass()
+    {
+        return 'term term-'.$this->Slug.($this->IsApplied? ' applied': '');
+    }    
 }

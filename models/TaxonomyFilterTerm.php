@@ -23,10 +23,5 @@ class Exceptional_TaxonomyFilterTerm extends Exceptional_AFilterTerm
             $this->Description = $nativeTerm->description;
         }
     }
-    
-    public function GetClass()
-    {
-        return 'term term-'.$this->Slug.($this->IsApplied? ' applied': '');
-    }
 }
 ?>
