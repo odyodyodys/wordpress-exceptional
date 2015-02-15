@@ -6,9 +6,9 @@
  */
 class Exceptional_NumericFilter extends Exceptional_AFilter
 {
-    private $Min;
-    private $Max;
-    private $Step;
+    public $Min;
+    public $Max;
+    public $Step;
 
     /**
      * @param int $min Minimum value (inclusive)
