@@ -1,24 +1,19 @@
 <?php
 /**
- * Is the term of a filter (Exceptional_Filter)
+ * Is the term of a filter (Exceptional_TaxonomyFilter)
  */
-class Exceptional_FilterTerm
+class Exceptional_TaxonomyFilterTerm extends Exceptional_AFilterTerm
 {
     // The wordpress native term object
     private $_nativeTerm;
-    // The permalink to filter using this term. If the term is already applied to a filter, the link is a filter without the term.
-    public $Permalink;
-    /**
-     * @var bool If the term is applied (filter is applied with this term and/or others)
-     */
-    public $IsApplied;
     public $Id;
-    public $Name;
-    public $Slug;
+    public $Name;    
     public $Description;
 
     public function __construct($nativeTerm = NULL)
     {
+        parent::__construct();
+        
         if (!is_null($nativeTerm))
         {
             $this->_nativeTerm = $nativeTerm;
@@ -27,8 +22,6 @@ class Exceptional_FilterTerm
             $this->Slug = $nativeTerm->slug;
             $this->Description = $nativeTerm->description;
         }
-        
-        $this->IsApplied = false;
     }
     
     public function GetClass()

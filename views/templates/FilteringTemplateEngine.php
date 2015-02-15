@@ -6,13 +6,13 @@ abstract class Exceptional_FilteringTemplateEngine extends Exceptional_TemplateE
 {
     /**
      * Dispays the filtering panel
-     * @param Exceptional_Filter[] $filters The filters to display
+     * @param Exceptional_AFilter[] $filters The filters to display
      */
     public abstract function DisplayFilteringPanel($filters);
     
     /**
      * Displays the applied filters (currently applied)
-     * @param Exceptional_Filter[] $filters The filters to display
+     * @param Exceptional_AFilter[] $filters The filters to display
      */
     public abstract function DisplayAppliedFilters($filters);
 }

@@ -14,7 +14,7 @@ class Exceptional_Filtering
     private static $_instance;
     
     /**
-     * @var Exceptional_Filter[] the filters of the page (the ones that matter to business logic)
+     * @var Exceptional_AFilter[] the filters of the page (the ones that matter to business logic)
      */
     private $_filters;
     
@@ -120,7 +120,7 @@ class Exceptional_Filtering
 
     /**
      * Registers a filter to be available. Must be called prior to Init
-     * @param Exceptional_Filter $filter
+     * @param Exceptional_AFilter $filter
      */
     public function RegisterFilter($filter)
     {
@@ -142,7 +142,7 @@ class Exceptional_Filtering
 
     /**
      * Takes a $taxonomy_slug slug and a taxonomy $term to filter by. It combines terms of the same taxonomy with a plus (+), so WordPress will use an AND operator to combine the terms.
-     * @param Exceptional_Filter|string $filter a Filter
+     * @param Exceptional_AFilter|string $filter a Filter
      * @param string $term a taxonomy term slug
      * @return string Permalink for the filtered/unfiltered content based on this term
      */
@@ -297,7 +297,7 @@ class Exceptional_Filtering
 
     /**
      * Returns the applied filters
-     * @return Exceptional_Filter[] Applied filters
+     * @return Exceptional_AFilter[] Applied filters
      */
     public function GetAppliedFilters()
     {

@@ -15,7 +15,7 @@ class Exceptional_Template_FilteringBasic extends Exceptional_FilteringTemplateE
     
     /**
      * Displays the filtering panel
-     * @param Exceptional_Filter[] $filters The available filters
+     * @param Exceptional_AFilter[] $filters The available filters
      */
     public function DisplayFilteringPanel($filters)
     {?>
@@ -38,7 +38,7 @@ class Exceptional_Template_FilteringBasic extends Exceptional_FilteringTemplateE
 
     /**
      * Displays the currently applied filters
-     * @param Exceptional_Filter[] $appliedFilters The filters currently applied
+     * @param Exceptional_AFilter[] $appliedFilters The filters currently applied
      */
     public function DisplayAppliedFilters($appliedFilters)
     {
