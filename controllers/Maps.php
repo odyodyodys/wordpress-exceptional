@@ -48,10 +48,10 @@ class Exceptional_Maps
     }
     
     /**
-     * Sets the template engine tha will be used for rendering
-     * @param Exceptional_Theme_FilteringBasic $template
+     * Sets the template engine that will be used for rendering
+     * @param Exceptional_MapTemplateEngine $template
      */
-    public function SetTemplateEngine($template)
+    public function SetTemplateEngine(Exceptional_MapTemplateEngine $template)
     {
         self::$_template = $template;
     }
@@ -60,7 +60,7 @@ class Exceptional_Maps
      * Adds a poi to the list of pois to display in the map
      * @param Exceptional_APoi $poi
      */
-    public function AddPoi($poi)
+    public function AddPoi(Exceptional_APoi $poi)
     {
         if (!is_null($poi))
         {

@@ -15,7 +15,6 @@ class Exceptional_TaxonomyFilter extends Exceptional_AFilter
      * Constructor
      * @param string $taxonomy The taxonomy of the filter
      * @param string $name The nice name of the filter
-     * @param Exceptional_TaxonomyFilterTerm[] $terms The terms of this filter
      * @param Exceptional_FilterOperator $operator The operator that is applied to the terms of this filter
      * @param bool $isPublic If a filter is public or not
      * @param string $slug The url representation of the taxonomy

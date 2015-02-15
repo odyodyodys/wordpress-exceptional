@@ -109,7 +109,7 @@ class Exceptional_Runtime
     /**
      * @param Exceptional_TemplateEngineBase $template A template engine that is used
      */
-    public function RegisterTemplateEngine($template)
+    public function RegisterTemplateEngine(Exceptional_TemplateEngineBase $template)
     {
         $this->templateEngines[] = $template;
     }

@@ -111,9 +111,9 @@ class Exceptional_Filtering
     
     /**
      * Sets the template engine tha will be used for rendering
-     * @param Exceptional_Theme_FilteringBasic $template
+     * @param Exceptional_FilteringTemplateEngine $template
      */
-    public function SetTemplateEngine($template)
+    public function SetTemplateEngine(Exceptional_FilteringTemplateEngine $template)
     {
         self::$_template = $template;
     }
@@ -122,7 +122,7 @@ class Exceptional_Filtering
      * Registers a filter to be available. Must be called prior to Init
      * @param Exceptional_AFilter $filter
      */
-    public function RegisterFilter($filter)
+    public function RegisterFilter(Exceptional_AFilter $filter)
     {
         $this->_filters[] = $filter;
     }
