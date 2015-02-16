@@ -13,9 +13,10 @@ class Exceptional_NumericFilter extends Exceptional_AFilter
     /**
      * @param int $min Minimum value (inclusive)
      * @param int $max Maximum value (inclusive)
+     * @param int $default The default value
      * @param int $step Step
      */
-    public function __construct($name, $slug, $min, $max, $step = 1,  $isPublic = true)
+    public function __construct($name, $slug, $min, $max, $default, $step = 1,  $isPublic = true)
     {
         parent::__construct($name, $slug, Exceptional_FilterOperator::_SINGLE, $isPublic);
         
@@ -23,8 +24,11 @@ class Exceptional_NumericFilter extends Exceptional_AFilter
         $this->Max = $max;
         $this->Step = $step;
         
-        // only one term can exist and most likely it'll be the current value
-        $this->Terms[] = new Exceptional_NumericFilterTerm();
+        // only one term can exist and most likely it'll be the current value, default it initially
+        $term = new Exceptional_NumericFilterTerm();
+        $term->Slug = $default;
+        $term->IsApplied = true;
+        $this->Terms[] = $term;
     }
     
     /**
