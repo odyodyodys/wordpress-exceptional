@@ -60,7 +60,7 @@ class Exceptional_Maps
      * Adds a poi to the list of pois to display in the map
      * @param Exceptional_APoi $poi
      */
-    public function AddPoi(Exceptional_APoi $poi)
+    public function AddPoi(Exceptional_APoi $poi = NULL)
     {
         if (!is_null($poi))
         {
