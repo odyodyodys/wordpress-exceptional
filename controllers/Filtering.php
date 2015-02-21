@@ -50,7 +50,7 @@ class Exceptional_Filtering
      */
     public function __construct()
     {
-        $this->filters = array();
+        $this->_filters = array();
     }
 
     // Methods
