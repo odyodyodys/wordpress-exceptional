@@ -158,7 +158,41 @@ class Exceptional_Filtering
             
             $filter_query .= $tmpFilter->GetFilterUrl();
         }
+        
+        return trailingslashit( $this->GetUrlBase().$filter_query).$this->GetRetainedVars();
+    }
+    
+    /**
+     * Returns the base url, without a trailing slash. The one we can start building the filters at.
+     */
+    private function GetUrlBase()
+    {
+        if (is_post_type_archive())
+        {
+            global $wp_query;
+            $base = get_post_type_archive_link($wp_query->query['post_type']);
+        }
+        else
+        {
+            $base = home_url($this->BaseUrl);
+        }
+        
+        return untrailingslashit($base);
+    }
+    
+    /**
+     * Returns the url that has no filters applied. Can be the "Remove all filters" link
+     */
+    public function GetNoFiltersUrl()
+    {
+        return trailingslashit($this->GetUrlBase()).$this->GetRetainedVars();
+    }
 
+    /**
+     * Returns the custom query vars that need to be retained in the urs
+     */
+    private function GetRetainedVars()
+    {
         // append retained variables (eg  ?var1=value1&var2=value2
         global $wp_query;
         $varSets = array();
@@ -177,21 +211,10 @@ class Exceptional_Filtering
             $retainedQueryVars = '?'.implode('&', $varSets);
         }
         
-        // url base
-        if (is_post_type_archive())
-        {
-            $base = get_post_type_archive_link($wp_query->query['post_type']);
-        }
-        else
-        {
-            $base = home_url($this->BaseUrl);
-        }
-        
-        
-        return trailingslashit(untrailingslashit($base) . $filter_query).$retainedQueryVars;
+        return $retainedQueryVars;
     }
-    
-    /**
+
+        /**
      * Generates all the rewrite rules for a given post type.
      *
      * The rewrite rules allow a post type to be filtered by all possible combinations & permutations
@@ -304,6 +327,23 @@ class Exceptional_Filtering
         return $applied;
     }
     
+    /**
+     * Returns true if at least one filter is applied
+     */
+    public function HaveAppliedFilters()
+    {
+        $have = false;
+        foreach ($this->_filters as $filter)
+        {
+            if ($filter->IsApplied && $filter->IsPublic)
+            {
+                $have = true;
+                break;
+            }
+        }
+        return $have;
+    }
+
     /**
      * Displays the applied filters using the registered template engine
      */
