@@ -11,4 +11,5 @@ abstract class Exceptional_APoi
     public abstract function GetLong();
     public abstract function GetTitle();
     public abstract function GetDescription();
+    public abstract function GetPermalink();
 }
