@@ -25,7 +25,7 @@ class Exceptional_Template_FilteringBasic extends Exceptional_FilteringTemplateE
                     <h3><?php echo $filter->Name;?></h3>
                     <ul class="terms"><?php
                     foreach ($filter->Terms as $term):?>
-                        <li class="<?php echo $term->GetClass(); ?>"><a href="<?php echo $term->Permalink; ?>"><?php
+                        <li class="<?php echo $term->GetClass(); ?>"><a href="<?php echo $term->Permalink; ?>" rel="nofollow"><?php
                             echo $term->Name;?>
                         </a></li><?php
                     endforeach;?>
