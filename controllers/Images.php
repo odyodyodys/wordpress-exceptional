@@ -78,16 +78,20 @@ class Exceptional_Images
      */
     public function ThePicture($id, $class = null, $alt = null)
     {
+        // instead of calling wp_get_attachment_src multiple times, get all results and just construct results
+        $picDir = dirname(wp_get_attachment_url($id));
+        $picMeta = wp_get_attachment_metadata($id);
+        
         // get image data (src, width, height) for registered size. Note: many breaking points might use the same image size.
         $imageData = array();
         foreach ($this->_sizes as $imageSize)
         {
-            $imageData[$imageSize] = wp_get_attachment_image_src($id, $imageSize);
+            $imageData[$imageSize] = path_join( $picDir, array_key_exists($imageSize, $picMeta['sizes']) ? $picMeta['sizes'][$imageSize]['file'] : $picMeta['sizes']['file']);
         }
         // if fallbackSize isn't included in _sizes, add this also
         if (!array_key_exists($this->_fallbackSize, $this->_sizes))
         {
-            $imageData[$this->_fallbackSize] = wp_get_attachment_image_src($id, $this->_fallbackSize);
+            $imageData[$this->_fallbackSize] = path_join( $picDir, array_key_exists($this->_fallbackSize, $picMeta['sizes']) ? $picMeta['sizes'][$this->_fallbackSize]['file'] : $picMeta['sizes']['file']);
         }
         
         // get alt if needed
@@ -115,11 +119,11 @@ class Exceptional_Images
             // force IE9 to recognise the <source> tags?>
             <!--[if IE 9]><video style="display: none;"><![endif]--><?php
             foreach ($this->_sizes as $key => $value):?>
-                <source srcset="<?php echo $imageData[$value][0];?>" media="<?php echo $this->_breakingPointQueries[$key]; ?>"><?php
+                <source srcset="<?php echo $imageData[$value];?>" media="<?php echo $this->_breakingPointQueries[$key]; ?>"><?php
             endforeach;?>
             <!--[if IE 9]></video><![endif]--><?php
             // fallback image?>
-            <img class="<?php echo $class;?>" srcset="<?php echo $imageData[$this->_fallbackSize][0];?>" alt="<?php echo $alt; ?>"/>
+            <img class="<?php echo $class;?>" srcset="<?php echo $imageData[$this->_fallbackSize];?>" alt="<?php echo $alt; ?>"/>
         </picture><?php
     }
 }
