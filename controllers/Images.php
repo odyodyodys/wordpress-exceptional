@@ -79,19 +79,19 @@ class Exceptional_Images
     public function ThePicture($id, $class = null, $alt = null)
     {
         // instead of calling wp_get_attachment_src multiple times, get all results and just construct results
-        $picDir = dirname(wp_get_attachment_url($id));
-        $picMeta = wp_get_attachment_metadata($id);
+        $picDir = dirname(wp_get_attachment_url($id));        
+        $picMeta = wp_get_attachment_metadata($id, true);
         
         // get image data (src, width, height) for registered size. Note: many breaking points might use the same image size.
         $imageData = array();
         foreach ($this->_sizes as $imageSize)
         {
-            $imageData[$imageSize] = path_join( $picDir, array_key_exists($imageSize, $picMeta['sizes']) ? $picMeta['sizes'][$imageSize]['file'] : $picMeta['sizes']['file']);
+            $imageData[$imageSize] = path_join( $picDir, array_key_exists($imageSize, $picMeta['sizes']) ? $picMeta['sizes'][$imageSize]['file'] : basename($picMeta['file']));
         }
         // if fallbackSize isn't included in _sizes, add this also
         if (!array_key_exists($this->_fallbackSize, $this->_sizes))
         {
-            $imageData[$this->_fallbackSize] = path_join( $picDir, array_key_exists($this->_fallbackSize, $picMeta['sizes']) ? $picMeta['sizes'][$this->_fallbackSize]['file'] : $picMeta['sizes']['file']);
+            $imageData[$this->_fallbackSize] = path_join( $picDir, array_key_exists($this->_fallbackSize, $picMeta['sizes']) ? $picMeta['sizes'][$this->_fallbackSize]['file'] : basename($picMeta['file']));
         }
         
         // get alt if needed
