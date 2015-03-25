@@ -21,12 +21,12 @@ class Exceptional_Filtering
     /**
      * @var Exceptional_FilteringTemplateEngine The template class to use for displaying the filters 
      */
-    private static $_template;
+    private $_template;
     
     /**
      * @var array[] Query vars that are needed to be retained (eg. sorting )
      */
-    private static $_retainedVars;
+    private $_retainedVars;
     
     /**
      * Similar to the category/tag base in Settings->Permalink. It is the base where all urls are applied
@@ -36,21 +36,13 @@ class Exceptional_Filtering
      */
     public $BaseUrl;
 
-    // Constructors
-    /**
-     * Static constructor. Gets called after class decleration (bottom of this file)
-     */
-    public static function __constructStatic()
-    {
-        self::$_retainedVars = array();
-    }
-
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->_filters = array();
+        $this->_retainedVars = array();
     }
 
     // Methods
@@ -70,7 +62,7 @@ class Exceptional_Filtering
     public function Init()
     {
         // check template engine is set
-        if (!isset(self::$_template))
+        if (!isset($this->_template))
         {
             // TODO inform admin with an error
             var_dump('Error');
@@ -107,7 +99,7 @@ class Exceptional_Filtering
      */
     public function SetTemplateEngine(Exceptional_FilteringTemplateEngine $template)
     {
-        self::$_template = $template;
+        $this->_template = $template;
     }
 
     /**
@@ -122,14 +114,14 @@ class Exceptional_Filtering
     /**
      * @param string $var The url variable to be retained in filter permalinks
      */
-    public static function RegisterRetainedQueryVar($var)
+    public function RegisterRetainedQueryVar($var)
     {
-        if (!isset(self::$_retainedVars))
+        if (!isset($this->_retainedVars))
         {
-            self::$_retainedVars = array();
+            $this->_retainedVars = array();
         }
         
-        self::$_retainedVars[] = $var;        
+        $this->_retainedVars[] = $var;        
     }
 
     /**
@@ -196,7 +188,7 @@ class Exceptional_Filtering
         // append retained variables (eg  ?var1=value1&var2=value2
         global $wp_query;
         $varSets = array();
-        foreach (self::$_retainedVars as $var)
+        foreach ($this->_retainedVars as $var)
         {
             if (array_key_exists($var, $_GET))
             {
@@ -349,7 +341,7 @@ class Exceptional_Filtering
      */
     public function DisplayAppliedFilters()
     {
-        self::$_template->DisplayAppliedFilters($this->GetAppliedFilters());
+        $this->_template->DisplayAppliedFilters($this->GetAppliedFilters());
     }
     
     /**
@@ -367,8 +359,7 @@ class Exceptional_Filtering
             }
         }
         
-        self::$_template->DisplayFilteringPanel($publicFilters);
+        $this->_template->DisplayFilteringPanel($publicFilters);
     }
 }
-Exceptional_Filtering::__constructStatic();
 ?>

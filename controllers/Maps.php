@@ -10,7 +10,7 @@ class Exceptional_Maps
     /**
      * @var Exceptional_MapTemplateEngine The template class to use for displaying the map
      */
-    private static $_template;
+    private $_template;
     
     /**
      * The Pois of the map
@@ -41,7 +41,7 @@ class Exceptional_Maps
     public function Init()
     {
         // check template engine is set
-        if (!isset(self::$_template))
+        if (!isset($this->_template))
         {
             // TODO inform admin with an error
         }
@@ -53,7 +53,7 @@ class Exceptional_Maps
      */
     public function SetTemplateEngine(Exceptional_MapTemplateEngine $template)
     {
-        self::$_template = $template;
+        $this->_template = $template;
     }
     
     /**
@@ -73,6 +73,6 @@ class Exceptional_Maps
      */
     public function DisplayMap()
     {
-        self::$_template->DisplayMap($this->_pois);
+        $this->_template->DisplayMap($this->_pois);
     }
 }
