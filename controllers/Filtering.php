@@ -19,6 +19,12 @@ class Exceptional_Filtering extends Exceptional_APresentationController
     private $_retainedVars;
     
     /**
+     * Weather the filters can be cleaned (removed all applied)
+     * @var bool
+     */
+    public $SupportCleaning;
+
+    /**
      * Similar to the category/tag base in Settings->Permalink. It is the base where all urls are applied
      * eg: for 'topics' the filters would be example.com/topics/filter1/term1/filter2/term2,term3
      * This must be set before calling Init()
@@ -31,6 +37,9 @@ class Exceptional_Filtering extends Exceptional_APresentationController
      */
     protected function __construct()
     {
+        parent::__construct();
+        
+        $this->SupportCleaning = true;
         $this->_filters = array();
         $this->_retainedVars = array();
     }
