@@ -1,8 +1,8 @@
 <?php
 /**
- * Sample template of how to use Exceptional_MapTemplateEngine
+ * Sample template of how to use Exceptional_AMapsTemplate
  */
-class Template_MapBasic extends Exceptional_MapTemplateEngine
+class Template_MapBasic extends Exceptional_AMapsTemplate
 {
     /**
      * @param Exceptional_APoi[] $pois The map POIs

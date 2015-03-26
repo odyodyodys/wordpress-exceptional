@@ -2,32 +2,34 @@
   Plugin Name:  Exceptional
   Plugin URI:   http://odysonline.gr
   Description:  Adds the Exceptional modules
-  Version:      0.31.1
+  Version:      0.32.0
   Author:       Odys
   Author URI:   http://odysonline.gr
 */
 
-class Exceptional_Runtime
-{
-    // singleton instance
-    private static $_instance;
+// required as it's inherited. Cannot use autoloader for this because it's not set up yet.
+require_once '/controllers/AController.php';
 
+class Exceptional_Runtime extends Exceptional_AController
+{
     // All the paths the autoloader should search to find the requested class
-    private static $PLUGIN_PATHS;
+    private $_pluginPaths;
     
     /**
      * The base path of the plugin
      */
-    private static $BASE_PATH;
+    private $_basePath;
 
     /**
-     * @var Exceptional_FilteringTemplateEngine[] Templates that are used
+     * @var Exceptional_ATemplate[] Templates that are used
      */
     private $templateEngines;
 
     // CONSTRUCTORS
-    private function __construct()
+    protected function __construct()
     {
+        parent::__construct();
+        
         $this->templateEngines = array();
         
         // Setup autoloader. When using a class name, php searches for the requested class inside the following paths
@@ -35,32 +37,19 @@ class Exceptional_Runtime
         // Eg: When the Exceptional_Seo class is used, it searches for Seo.php inside all the PluginPaths.
         
         // Paths with classes sorted as most used to less used to optimize search speed
-        self::$PLUGIN_PATHS = array('controllers/', 'models/', 'utils/', 'views/templates/', '/');
-        self::$BASE_PATH = plugin_dir_path(__FILE__);
+        $this->_pluginPaths = array('controllers/', 'models/', 'utils/', 'views/templates/', '/');
+        $this->_basePath = plugin_dir_path(__FILE__);
         // register autoloader
-        spl_autoload_register(array(__CLASS__, 'Autoloader'));
+        spl_autoload_register(array($this, 'Autoloader'));
         
         // init self as delayed as possible
         add_filter('get_header', array($this, 'Init'), 11);
         
         // init modules
-        $seo = Exceptional_Seo::Instance();
-        $seo->Init();
+        Exceptional_Seo::Instance()->Init();
     }
     
     // METHODS
-    
-    /**
-     * Singleton instance
-     */
-    public static function Instance()
-    {
-        if (!self::$_instance)
-        {
-            self::$_instance = new Exceptional_Runtime();
-        }
-        return self::$_instance;
-    }
     
     public function Init()
     {
@@ -84,8 +73,8 @@ class Exceptional_Runtime
         }
     }
 
-    public static function Autoloader($class)
-    {
+    public function Autoloader($class)
+    {        
         // Handle request starting with the plugin prefix only
         if (strpos($class, 'Exceptional_') !== 0)
         {
@@ -95,10 +84,10 @@ class Exceptional_Runtime
         // try to find it in the registered paths        
         // remove the prefix to get the class filename
         $classFile = str_replace('Exceptional_', '', $class). '.php';
-        foreach (self::$PLUGIN_PATHS as $path)
+        foreach ($this->_pluginPaths as $path)
         {
             // eg Exceptional_Seo -> /controllers/Seo.php
-            if (@include self::$BASE_PATH.$path.$classFile )
+            if (@include $this->_basePath.$path.$classFile )
             {
                 // found and included. job is done
                 break;
@@ -107,9 +96,9 @@ class Exceptional_Runtime
     }
 
     /**
-     * @param Exceptional_TemplateEngineBase $template A template engine that is used
+     * @param Exceptional_ATemplate $template A template engine that is used
      */
-    public function RegisterTemplateEngine(Exceptional_TemplateEngineBase $template)
+    public function RegisterTemplateEngine(Exceptional_ATemplate $template)
     {
         $this->templateEngines[] = $template;
     }

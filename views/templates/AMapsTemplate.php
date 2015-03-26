@@ -2,7 +2,7 @@
 /**
  * Base class to display a map with POIs
  */
-abstract class Exceptional_MapTemplateEngine extends Exceptional_TemplateEngineBase
+abstract class Exceptional_AMapsTemplate extends Exceptional_ATemplate
 {
     /**
      * @param Exceptional_APoi[] $pois The Pois to add to map

@@ -2,59 +2,15 @@
 /**
  * Map and Poi controller
  */
-class Exceptional_Maps
+class Exceptional_Maps extends Exceptional_APresentationController
 {
     // FIELDS AND PROPERTIES
-    private static $_instance; // singleton instance
-    
-    /**
-     * @var Exceptional_MapTemplateEngine The template class to use for displaying the map
-     */
-    private $_template;
-    
+
     /**
      * The Pois of the map
      * @var Exceptional_APoi[] 
      */
     public $_pois;
-
-    // CONSTRUCTORS
-    private function __construct()
-    {
-        
-    }
-    
-    // FUNCTIONS
-    public static function Instance()
-    {
-        if (!self::$_instance)
-        {
-            self::$_instance = new Exceptional_Maps();
-        }
-        return self::$_instance;
-    }
-        
-    /**
-     * Inits the class to be ready to deliver data
-     * Is called after construct and after data has been set (eg pois added)
-     */
-    public function Init()
-    {
-        // check template engine is set
-        if (!isset($this->_template))
-        {
-            // TODO inform admin with an error
-        }
-    }
-    
-    /**
-     * Sets the template engine that will be used for rendering
-     * @param Exceptional_MapTemplateEngine $template
-     */
-    public function SetTemplateEngine(Exceptional_MapTemplateEngine $template)
-    {
-        $this->_template = $template;
-    }
     
     /**
      * Adds a poi to the list of pois to display in the map

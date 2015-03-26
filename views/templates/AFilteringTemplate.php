@@ -2,7 +2,7 @@
 /**
  * Base class for filtering template engines
  */
-abstract class Exceptional_FilteringTemplateEngine extends Exceptional_TemplateEngineBase
+abstract class Exceptional_AFilteringTemplate extends Exceptional_ATemplate
 {
     /**
      * Dispays the filtering panel

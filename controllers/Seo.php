@@ -4,29 +4,26 @@
  * 
  * The SEO related stuff
  */
-class Exceptional_Seo
+class Exceptional_Seo extends Exceptional_AController
 {
-    // Variables
-    private static $_instance; // singleton instance
-
-    // constructors
-    private function __construct()
-    {
-        
-    }
+    /**
+     * @var array The latin to utf-8 char mapping
+     */
+    private $_charMapping;
+    private $_charRegex;
 
     // Methods
-    public static function Instance()
-    {
-        if (!self::$_instance)
-        {
-            self::$_instance = new Exceptional_Seo();
-        }
-        return self::$_instance;
-    }
-    
+
     public function Init()
     {
+        $this->_charMapping = array(
+            // greek consonants
+            'β' => 'b', 'γ' => 'g', 'δ' => 'd', 'ζ' => 'z', 'θ' => 'th', 'κ' => 'k', 'λ' => 'l', 'μ' => 'm', 'ν' => 'n', 'ξ' => 'ks', 'π' => 'p', 'ρ' => 'r', 'σ' => 's', 'τ' => 't', 'φ' => 'f', 'χ' => 'x', 'ψ' => 'ps',
+            // greek vowels
+            'α' => 'a', 'ά' => 'a', 'ε' => 'e', 'έ' => 'e', 'η' => 'i', 'ή' => 'i', 'ι' => 'i', 'ί' => 'i', 'ϊ' => 'i', 'ΐ' => 'i', 'ου' => 'ou', 'ού' => 'ou', 'ο' => 'o', 'ό' => 'o', 'υ' => 'y', 'ύ' => 'y', 'ϋ' => 'y', 'ΰ' => 'y', 'ς' => 's', 'ω' => 'o', 'ώ' => 'o'
+        );
+        $this->_charRegex = '/[^_a-z0-9' . implode('', $this->_charMapping) . ']/ui';
+        
         add_filter('sanitize_title', array($this, 'TitleSanitizerFilter'));
     }
     
@@ -54,13 +51,6 @@ class Exceptional_Seo
         $sep = '-';
 
         // character translation table  
-        $chars = array
-            (
-            // greek consonants
-            'β' => 'b', 'γ' => 'g', 'δ' => 'd', 'ζ' => 'z', 'θ' => 'th', 'κ' => 'k', 'λ' => 'l', 'μ' => 'm', 'ν' => 'n', 'ξ' => 'ks', 'π' => 'p', 'ρ' => 'r', 'σ' => 's', 'τ' => 't', 'φ' => 'f', 'χ' => 'x', 'ψ' => 'ps',
-            // greek vowels
-            'α' => 'a', 'ά' => 'a', 'ε' => 'e', 'έ' => 'e', 'η' => 'i', 'ή' => 'i', 'ι' => 'i', 'ί' => 'i', 'ϊ' => 'i', 'ΐ' => 'i', 'ου' => 'ou', 'ού' => 'ou', 'ο' => 'o', 'ό' => 'o', 'υ' => 'y', 'ύ' => 'y', 'ϋ' => 'y', 'ΰ' => 'y', 'ς' => 's', 'ω' => 'o', 'ώ' => 'o'
-        );
 
         // lowercase and try to preserve charset
         if (!function_exists('mb_strtolower'))
@@ -76,13 +66,13 @@ class Exceptional_Seo
         $str = trim(strip_tags(urldecode($str)));
 
         // convert disallowed chars into allowed
-        foreach ($chars as $no => $yes)
+        foreach ($this->_charMapping as $no => $yes)
         {
             $str = str_replace($no, $yes, $str);
         }
 
         // replaces non allowed chars into spaces
-        $str = preg_replace('/[^_a-z0-9' . implode('', $chars) . ']/ui', ' ', $str);
+        $str = preg_replace($this->_charRegex, ' ', $str);
 
         // delete remaining spaces
         $str = preg_replace('/\s+/', $sep, str_replace('+', ' ', $str));

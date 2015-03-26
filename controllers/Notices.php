@@ -4,13 +4,8 @@
  *
  * @author Antonis
  */
-class Exceptional_Notices
+class Exceptional_Notices extends Exceptional_APresentationController
 {
-    /**
-     * Singleton instance
-     */
-    private static $_instance;
-    
     /**
      * Each notice must belong to one of them, like categories. They are provided to the template engine also.
      * @var array Notice types
@@ -27,47 +22,22 @@ class Exceptional_Notices
      * @var string The action name
      */
     private $_displayAction;
-    
-    /**
-     * @var Exceptional_NoticesTemplateEngine The template class to use for displaying the notices
-     */
-    private $_template;
 
     private function __construct()
     {
+        parent::__construct();
+        
         $this->_notices = array();
         $this->_types = array();
     }
     
     // Methods
     
-    public static function Instance()
-    {
-        if (!self::$_instance)
-        {
-            self::$_instance = new Exceptional_Notices();
-        }
-        return self::$_instance;
-    }
-    
     public function Init()
     {
-        // check template engine is set
-        if (!isset($this->_template))
-        {
-            // TODO inform admin with an error
-        }
+        parent::Init();
         
         add_action($this->_displayAction, array($this, 'Display'));
-    }
-    
-    /**
-     * Sets the template engine that will be used for rendering
-     * @param Exceptional_NoticesTemplateEngine $template
-     */
-    public function SetTemplateEngine(Exceptional_NoticesTemplateEngine $template)
-    {
-        $this->_template = $template;
     }
 
     /**

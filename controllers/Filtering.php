@@ -4,25 +4,15 @@
  * 
  * Filtering controller
  */
-class Exceptional_Filtering
+class Exceptional_Filtering extends Exceptional_APresentationController
 {
     // FILTERS & PROPERTIES
-    
-    /**
-     * @var Exceptional_Filtering The singleton instance 
-     */
-    private static $_instance;
     
     /**
      * @var Exceptional_AFilter[] the filters of the page (the ones that matter to business logic)
      */
     private $_filters;
-    
-    /**
-     * @var Exceptional_FilteringTemplateEngine The template class to use for displaying the filters 
-     */
-    private $_template;
-    
+        
     /**
      * @var array[] Query vars that are needed to be retained (eg. sorting )
      */
@@ -39,21 +29,13 @@ class Exceptional_Filtering
     /**
      * Constructor
      */
-    public function __construct()
+    protected function __construct()
     {
         $this->_filters = array();
         $this->_retainedVars = array();
     }
 
     // Methods
-    public static function Instance()
-    {
-        if (!self::$_instance)
-        {
-            self::$_instance = new Exceptional_Filtering();
-        }
-        return self::$_instance;
-    }
     
     /**
      * Inits the Filtering to be ready to deliver data
@@ -61,12 +43,7 @@ class Exceptional_Filtering
      */
     public function Init()
     {
-        // check template engine is set
-        if (!isset($this->_template))
-        {
-            // TODO inform admin with an error
-            var_dump('Error');
-        }
+        parent::Init();
         
         // init filters
         $this->InitFilters();
@@ -91,15 +68,6 @@ class Exceptional_Filtering
                 $term->Permalink = $this->GetFilterPermalink($filter, $term->Slug);
             }
         }
-    }
-    
-    /**
-     * Sets the template engine tha will be used for rendering
-     * @param Exceptional_FilteringTemplateEngine $template
-     */
-    public function SetTemplateEngine(Exceptional_FilteringTemplateEngine $template)
-    {
-        $this->_template = $template;
     }
 
     /**
@@ -198,6 +166,7 @@ class Exceptional_Filtering
         }
         
         // bulk query vars
+        $retainedQueryVars = '';
         if (!empty($varSets))
         {
             $retainedQueryVars = '?'.implode('&', $varSets);

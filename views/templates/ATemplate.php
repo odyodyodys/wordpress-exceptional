@@ -2,14 +2,20 @@
 /**
  * Base for template files
  */
-abstract class Exceptional_TemplateEngineBase
+abstract class Exceptional_ATemplate
 {
     private $_styles;
     private $_scripts;
+    
+    /**
+     * The url base of the class that implements this. Use it to register scripts and style relative to the template engine
+     * @var string Url base
+     */
     protected $_myUri;
 
-    // CONSTRUCTORS
-    
+    /**
+     * Constructor
+     */    
     public function __construct()
     {
         $this->_scripts = array();

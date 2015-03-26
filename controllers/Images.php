@@ -4,13 +4,8 @@
  *
  * @author Odys
  */
-class Exceptional_Images
-{
-    /**
-     * The singleton instance
-     */
-    private static $_instance;
-    
+class Exceptional_Images extends Exceptional_AController
+{    
     /**
      * @var array key/value pair of query-name and media query
      */
@@ -30,20 +25,13 @@ class Exceptional_Images
     /**
      * Constrcutror
      */
-    private function __construct()
+    protected function __construct()
     {
+        parent::__construct();
+        
         $this->_breakingPointQueries = array();
     }
-    
-    public static function Instance()
-    {
-        if (!self::$_instance)
-        {
-            self::$_instance = new Exceptional_Images();
-        }
-        return self::$_instance;
-    }
-    
+        
     /**
      * Registers a breaking point by defining a key and a media query
      * @param string $key A unique key for the query
@@ -81,17 +69,18 @@ class Exceptional_Images
         // instead of calling wp_get_attachment_src multiple times, get all results and just construct results
         $picDir = dirname(wp_get_attachment_url($id));        
         $picMeta = wp_get_attachment_metadata($id, true);
+        $defaultSizeFile = basename($picMeta['file']);
         
         // get image data (src, width, height) for registered size. Note: many breaking points might use the same image size.
         $imageData = array();
         foreach ($this->_sizes as $imageSize)
         {
-            $imageData[$imageSize] = path_join( $picDir, array_key_exists($imageSize, $picMeta['sizes']) ? $picMeta['sizes'][$imageSize]['file'] : basename($picMeta['file']));
+            $imageData[$imageSize] = path_join( $picDir, array_key_exists($imageSize, $picMeta['sizes']) ? $picMeta['sizes'][$imageSize]['file'] : $defaultSizeFile);
         }
         // if fallbackSize isn't included in _sizes, add this also
         if (!array_key_exists($this->_fallbackSize, $this->_sizes))
         {
-            $imageData[$this->_fallbackSize] = path_join( $picDir, array_key_exists($this->_fallbackSize, $picMeta['sizes']) ? $picMeta['sizes'][$this->_fallbackSize]['file'] : basename($picMeta['file']));
+            $imageData[$this->_fallbackSize] = path_join( $picDir, array_key_exists($this->_fallbackSize, $picMeta['sizes']) ? $picMeta['sizes'][$this->_fallbackSize]['file'] : $defaultSizeFile);
         }
         
         // get alt if needed

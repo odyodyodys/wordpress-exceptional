@@ -2,7 +2,7 @@
 /**
  * Simple template for filters
  */
-class Exceptional_Template_FilteringBasic extends Exceptional_FilteringTemplateEngine
+class Exceptional_Template_FilteringBasic extends Exceptional_AFilteringTemplate
 {
     public function __construct()
     {
