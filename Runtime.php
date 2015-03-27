@@ -2,13 +2,13 @@
   Plugin Name:  Exceptional
   Plugin URI:   http://odysonline.gr
   Description:  Adds the Exceptional modules
-  Version:      0.33.0
+  Version:      0.33.1
   Author:       Odys
   Author URI:   http://odysonline.gr
 */
 
 // required as it's inherited. Cannot use autoloader for this because it's not set up yet.
-require_once '/controllers/AController.php';
+require_once 'controllers/AController.php';
 
 class Exceptional_Runtime extends Exceptional_AController
 {
