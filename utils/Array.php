@@ -7,26 +7,50 @@
 class Exceptional_Array
 {
     /**
-     * Returns the first object in an array that has property=value
+     * Returns the first or all objects in an array that have property=valueExpr or valueExpr matches as a regex egainst an object's property
+     * Eg. valueExpr = 'orange' would match an object having 'orange' as a value of any of its properties
+     * valueExpr = '/regExExpression/' would match an object having a value matching that regex.
      * @param array $objects An array of objects
      * @param string $property The property to compare
-     * @param mixed $value The value the property must have
-     * @return mixed|null The object having property=value or null if not found
+     * @param mixed $valueExpr The value the property must have, or a regex expression to match the property value against
+     * @return object|array|null The matching objects or empty array
      */
-    public static function Having($objects, $property, $value)
+    public static function Having($objects, $property, $valueExpr, $all = false)
     {
-        $target = NULL;
+        $isRegex = Exceptional_Input::IsRegex($valueExpr);
+        
+        $matching = array();
+
         foreach ($objects as $obj)
         {
-            if ($obj->{$property} === $value)
+            if (!$isRegex && $obj->{$property} === $valueExpr)
             {
-                $target = $obj;
+                $matching[] = $obj;
+            }
+            elseif (preg_match($valueExpr, $obj->{$property}))
+            {
+                $matching[] = $obj;
+            }
+            
+            if (!$all && !empty($matching) != null)
+            {
                 break;
-            }            
+            }
         }
-        return $target;
+        
+        // if only first match, return the object without an array
+        $result = null;
+        if (!$all && !empty($matching))
+        {
+            $result = $matching[0];
+        }
+        elseif(!empty($matching))
+        {
+            $result = $matching;
+        }
+        return $result;
     }
-    
+
     /**
      * Returns an array with the values of the $property of all objects
      * @param array $objects The array with objects

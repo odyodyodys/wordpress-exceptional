@@ -98,7 +98,10 @@ class Exceptional_Filtering extends Exceptional_APresentationController
             $this->_retainedVars = array();
         }
         
-        $this->_retainedVars[] = $var;        
+        if (!empty($var))
+        {
+            $this->_retainedVars[] = $var;
+        }
     }
 
     /**
@@ -134,7 +137,7 @@ class Exceptional_Filtering extends Exceptional_APresentationController
     /**
      * Returns the base url, without a trailing slash. The one we can start building the filters at.
      */
-    private function GetUrlBase()
+    public function GetUrlBase()
     {
         if (is_post_type_archive())
         {
@@ -184,7 +187,7 @@ class Exceptional_Filtering extends Exceptional_APresentationController
         return $retainedQueryVars;
     }
 
-        /**
+    /**
      * Generates all the rewrite rules for a given post type.
      *
      * The rewrite rules allow a post type to be filtered by all possible combinations & permutations
@@ -273,6 +276,16 @@ class Exceptional_Filtering extends Exceptional_APresentationController
     }
     
     /**
+     * Gets a filter by its property value. The available properties are: (Name|Slug)
+     * @param string $value The value of the filter
+     * @param string $var The property of the filter to compare value to
+     */
+    public function GetFilter($value, $var = 'Slug')
+    {
+        return Exceptional_Array::Having($this->_filters, $var, $value);
+    }
+
+    /**
      * Returns all filters
      */
     public function GetFilters()
@@ -297,6 +310,16 @@ class Exceptional_Filtering extends Exceptional_APresentationController
         return $applied;
     }
     
+    /**
+     * Gets an applied filter by its property value. The available properties are: (Name|Slug)
+     * @param string $value The value of the filter
+     * @param string $var The property of the filter to compare value to
+     */
+    public function GetAppliedFilter($value, $var = 'Slug')
+    {
+        return Exceptional_Array::Having($this->GetAppliedFilters(), $var, $value);
+    }
+
     /**
      * Returns true if at least one filter is applied
      */
