@@ -13,6 +13,7 @@ class Exceptional_Array
      * @param array $objects An array of objects
      * @param string $property The property to compare
      * @param mixed $valueExpr The value the property must have, or a regex expression to match the property value against
+     * @param bool $all Return the first match or all
      * @return object|array|null The matching objects or empty array
      */
     public static function Having($objects, $property, $valueExpr, $all = false)
@@ -27,11 +28,12 @@ class Exceptional_Array
             {
                 $matching[] = $obj;
             }
-            elseif (preg_match($valueExpr, $obj->{$property}))
+            elseif ($isRegex && preg_match($valueExpr, $obj->{$property}))
             {
                 $matching[] = $obj;
             }
             
+            // looking for one only and found it
             if (!$all && !empty($matching) != null)
             {
                 break;
