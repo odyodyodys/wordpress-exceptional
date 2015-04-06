@@ -23,7 +23,7 @@ class Exceptional_Notices extends Exceptional_APresentationController
      */
     private $_displayAction;
 
-    private function __construct()
+    protected function __construct()
     {
         parent::__construct();
         

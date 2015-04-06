@@ -4,7 +4,7 @@
  *
  * @author Antonis
  */
-abstract class Exceptional_NoticesTemplate extends Exceptional_ATemplate
+abstract class Exceptional_ANoticesTemplate extends Exceptional_ATemplate
 {
     /**
      * Displays the notices
