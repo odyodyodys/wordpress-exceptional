@@ -32,7 +32,7 @@ class Exceptional_NumericFilter extends Exceptional_AFilter
     }
     
     /**
-     * Init the term. If the filter is applied, the only term must have this slug and be applied also
+     * Init the term. If the filter is applied, the only term must have this slug and be checked also
      * @param array $appliedFilters
      */
     public function InitAppliedTerms(array $appliedFilters)
@@ -43,7 +43,7 @@ class Exceptional_NumericFilter extends Exceptional_AFilter
             $this->IsApplied = true;
                         
             $this->Terms[0]->Slug = $appliedFilters[$this->Slug][0];
-            $this->SetTermApplied($appliedFilters[$this->Slug][0], true);
+            $this->SetTermState($appliedFilters[$this->Slug][0], Exceptional_CheckState::Checked);
         }
     }
     
