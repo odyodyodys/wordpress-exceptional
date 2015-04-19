@@ -47,4 +47,8 @@ class Exceptional_NumericFilter extends Exceptional_AFilter
         }
     }
     
+    public function GetClass()
+    {
+        return parent::GetClass().' filter-type-numeric';
+    }
 }

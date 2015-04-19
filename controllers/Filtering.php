@@ -74,8 +74,23 @@ class Exceptional_Filtering extends Exceptional_APresentationController
         {
             foreach ($filter->Terms as $term)
             {
-                $term->Permalink = $this->GetFilterPermalink($filter, $term->Slug);
+                $this->InitTermPermalink($term, $filter);
             }
+        }
+    }
+    
+    /**
+     * Initializes the permalink of a term. Recursively initializes permalinks on term children
+     * @param Exceptional_AFilterTerm $term
+     * @param Exceptional_AFilter $filter
+     */
+    private function InitTermPermalink(Exceptional_AFilterTerm $term, Exceptional_AFilter $filter)
+    {
+        $term->Permalink = $this->GetTermPermalink($filter, $term->Slug);
+        
+        foreach ($term->Children as $childTerm)
+        {
+            $this->InitTermPermalink($childTerm, $filter);
         }
     }
 
@@ -107,17 +122,17 @@ class Exceptional_Filtering extends Exceptional_APresentationController
     /**
      * Takes a $taxonomy_slug slug and a taxonomy $term to filter by. It combines terms of the same taxonomy with a plus (+), so WordPress will use an AND operator to combine the terms.
      * @param Exceptional_AFilter|string $filter a Filter
-     * @param string $term a taxonomy term slug
+     * @param string $termSlug a taxonomy term slug
      * @return string Permalink for the filtered/unfiltered content based on this term
      */
-    private function GetFilterPermalink($filter, $term)
-    {        
-        global $wp_query;
+    private function GetTermPermalink($filter, $termSlug)
+    {
+        // An active filter should exclude self in its permalink. The term acts as a toggle switch.
 
-        // Clone filter, set term as applied
+        // Clone filter, invert isApplied
         $newFilter = clone $filter;
-        $curTerm = $newFilter->GetTermBySlug($term);
-        $newFilter->SetTermApplied($term, !$curTerm->IsApplied);
+        $newState = $newFilter->GetTermBySlug($termSlug)->GetCheckedState() != Exceptional_CheckState::Unchecked? Exceptional_CheckState::Unchecked : Exceptional_CheckState::Checked;
+        $newFilter->SetTermState($termSlug, $newState);
         
         // combine urls of all filters
         $filter_query = '/';
@@ -282,7 +297,7 @@ class Exceptional_Filtering extends Exceptional_APresentationController
      */
     public function GetFilter($value, $var = 'Slug')
     {
-        return Exceptional_Array::Having($this->_filters, $var, $value);
+        return Exceptional_Array::Instance()->Having($this->_filters, $var, $value);
     }
 
     /**
@@ -317,7 +332,7 @@ class Exceptional_Filtering extends Exceptional_APresentationController
      */
     public function GetAppliedFilter($value, $var = 'Slug')
     {
-        return Exceptional_Array::Having($this->GetAppliedFilters(), $var, $value);
+        return Exceptional_Array::Instance()->Having($this->GetAppliedFilters(), $var, $value);
     }
 
     /**

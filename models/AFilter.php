@@ -70,33 +70,50 @@ abstract class Exceptional_AFilter
     }
 
     /**
-     * Returns the terms that are applied to the filter
+     * Returns the terms of the filter that are checked
      */
-    public function GetAppliedTerms()
+    public function GetCheckedTerms()
     {
-        $applied = array();
+        $checked = array();
         foreach ($this->Terms as $term)
         {
-            if ($term->IsApplied)
-            {
-                $applied[] = $term;
-            }
+            $checked = array_merge($checked, $term->GetChecked());
         }
-        return $applied;
+        return $checked;
     }
     
     /**
      * Returns a term of the filter based on its slug
      * @param string $termSlug
+     * @return Exceptional_AFilterTerm|NULL The target term or null if not found
      */
     public function GetTermBySlug($termSlug)
     {
+        return $this->GetTermBySlugRecursive($termSlug, $this->Terms);
+    }
+    
+    /**
+     * Traverses a term tree to find the one with the requested slug
+     * @param string $termSlug The slug of the requested term
+     * @param array $terms The terms to search into
+     * @return Exceptional_AFilterTerm The requested term or null
+     */
+    private function GetTermBySlugRecursive($termSlug, $terms)
+    {
         $term = NULL;
-        foreach ($this->Terms as $tmpTerm)
+        foreach ($terms as $tmpTerm)
         {
-            if ($tmpTerm->Slug == $termSlug)
+            if ($tmpTerm->Slug === $termSlug)
             {
                 $term = $tmpTerm;
+            }
+            else
+            {
+                $term = $this->GetTermBySlugRecursive($termSlug, $tmpTerm->Children);
+            }
+            
+            if ($term !== NULL)
+            {
                 break;
             }
         }
@@ -104,46 +121,43 @@ abstract class Exceptional_AFilter
     }
     
     /**
-     * Sets which terms are applied based on the applied terms
-     * @param array $appliedFilters
+     * Sets which terms are checked based on the applied term slugs
+     * @param array $appliedFilterSlugs Associative array with key the filter slug and value array of term slugs
      */
-    public function InitAppliedTerms(array $appliedFilters)
+    public function InitAppliedTerms(array $appliedFilterSlugs)
     {
-        // set applied filters
-        if (array_key_exists($this->Slug, $appliedFilters))
+        // is about this filter;
+        if (array_key_exists($this->Slug, $appliedFilterSlugs))
         {
             $this->IsApplied = true;
-            // set applied terms in applied filters
-            foreach ($appliedFilters[$this->Slug] as $termSlug)
+            
+            // set checked terms in filter
+            foreach ($appliedFilterSlugs[$this->Slug] as $termSlug)
             {
-                $this->SetTermApplied($termSlug, true);
+                $this->SetTermState($termSlug, Exceptional_CheckState::Checked);
             }
         }
     }
 
     /**
-     * Marks a term of the filter as applied
+     * Changes the state of a filter term
      * @param string $termSlug Slug of the term to set as applied
+     * @param Exceptional_CheckState $state The state to set
      */
-    public function SetTermApplied($termSlug, $isApplied)
+    public function SetTermState($termSlug, $state)
     {
         foreach ($this->Terms as $term)
         {
-            if ($term->Slug == $termSlug)
+            if ($term->SetChecked($state, $termSlug) === Exceptional_CheckState::Checked)
             {
-                $term->IsApplied = $isApplied;
+                // the value in the term has been applied, the filter is now applied
+                $this->IsApplied = true;                
             }
-            else if ($this->Operator == Exceptional_FilterOperator::_SINGLE)
+            else if ($this->Operator === Exceptional_FilterOperator::_SINGLE)
             {
-                // we mustn't break when term is found. It is also needed to set all other terms as not applied
-                $term->IsApplied = false;
+                // if on single filter operator we mustn't break when term is found. Its also needed to set all other terms as not applied
+                $term->SetChecked(Exceptional_CheckState::Unchecked);
             }
-        }
-        
-        // if a term is applied, the filter must be applied too
-        if ($isApplied == true)
-        {
-            $this->IsApplied = true;
         }
     }
     
@@ -159,23 +173,18 @@ abstract class Exceptional_AFilter
         $url = '';
         if ($this->IsApplied)
         {
-            $appliedTerms = array();
+            $checkedTerms = array();
             foreach ($this->Terms as $term)
             {
-                if (!$term->IsApplied)
-                {
-                    continue;              
-                }
-                
-                $appliedTerms[] = $term->Slug;
+                $checkedTerms = array_merge($checkedTerms, $term->GetChecked());
             }
-                        
-            if (!empty($appliedTerms))
+
+            if (!empty($checkedTerms))
             {
-                $url = $this->Slug .'/'. implode($this->Operator, $appliedTerms).'/';
+                $url = $this->Slug .'/'. implode($this->Operator, Exceptional_Array::Instance()->Values($checkedTerms, 'Slug')).'/';
             }
         }
-
+        
         return $url;
     }
 }

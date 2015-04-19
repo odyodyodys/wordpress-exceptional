@@ -2,7 +2,7 @@
   Plugin Name:  Exceptional
   Plugin URI:   http://odysonline.gr
   Description:  Adds the Exceptional modules
-  Version:      0.34.2
+  Version:      0.35.0
   Author:       Odys
   Author URI:   http://odysonline.gr
 */

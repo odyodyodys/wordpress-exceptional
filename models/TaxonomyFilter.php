@@ -26,24 +26,54 @@ class Exceptional_TaxonomyFilter extends Exceptional_AFilter
         $this->Taxonomy = $taxonomy;
                 
         // init my terms
-        $this->Terms = array();
-        $terms = get_terms($taxonomy, array('get' => 'all'));
-        foreach ($terms as $term)
+        $this->Terms = array();        
+        $nativeTerms = get_categories(array( 'taxonomy' => $taxonomy, 'hide_empty' => 0, 'hierarchical' => 1 ));
+        
+        // Index all terms by parent id, for easy lookup later
+        $termsByParent = array();
+        foreach ($nativeTerms as $nativeTerm)
         {
-            $this->Terms[] = new Exceptional_TaxonomyFilterTerm($term);
+            $parentId = $nativeTerm->category_parent;
+            if (!array_key_exists($parentId, $termsByParent))
+            {
+                $termsByParent[$parentId] = array();
+            }
+            $termsByParent[$parentId][] = new Exceptional_TaxonomyFilterTerm($nativeTerm);
         }
+
+        $this->TermChildrenHierarchical($termsByParent, $termsByParent[0], $this->Terms);
     }
     
-    public function InitAppliedTerms(array $appliedFilters)
+    /**
+     * Recursively build the term tree based on terms by parrent
+     * @param array $termsByParent term objects (wp) by parent id
+     * @param array $childrenOfParent The part of the $termsByParent we are interested in
+     * @param array $childBag Resulting array containing all children of the same parent
+     */
+    public function TermChildrenHierarchical(&$termsByParent, &$childrenOfParent, &$childBag)
     {
-        // set applied filters
-        if (array_key_exists($this->Taxonomy, $appliedFilters))
+        foreach ($childrenOfParent as $childTerm)
+        {
+            $childId = $childTerm->Id;
+            if (array_key_exists($childId, $termsByParent))
+            {
+                $this->TermChildrenHierarchical($termsByParent, $termsByParent[$childId], $childTerm->Children);
+            }
+            $childBag[$childId] = $childTerm;
+        }
+    }
+
+    public function InitAppliedTerms(array $appliedFilterSlugs)
+    {
+        // is about this filter;
+        if (array_key_exists($this->Taxonomy, $appliedFilterSlugs))
         {
             $this->IsApplied = true;
-            // set applied terms in applied filters
-            foreach ($appliedFilters[$this->Taxonomy] as $termSlug)
+            
+            // set checked terms in filter
+            foreach ($appliedFilterSlugs[$this->Taxonomy] as $termSlug)
             {
-                $this->SetTermApplied($termSlug, true);
+                $this->SetTermState($termSlug, Exceptional_CheckState::Checked);
             }
         }
     }
@@ -53,6 +83,6 @@ class Exceptional_TaxonomyFilter extends Exceptional_AFilter
      */
     public function GetClass()
     {
-        return 'filter filter-'.$this->Taxonomy.' '.Exceptional_FilterOperator::GetClass($this->Operator);
+        return 'filter filter-type-taxonomy filter-'.$this->Taxonomy.' '.Exceptional_FilterOperator::GetClass($this->Operator);
     }
 }
