@@ -1,6 +1,6 @@
 <?php
 /**
- * Map and Poi controller
+ * Map, Poi and Route controller
  */
 class Exceptional_Maps extends Exceptional_APresentationController
 {
@@ -8,15 +8,29 @@ class Exceptional_Maps extends Exceptional_APresentationController
 
     /**
      * The Pois of the map
-     * @var Exceptional_APoi[] 
+     * @var Exceptional_Poi[] 
      */
-    public $_pois;
+    private $_pois;
     
     /**
-     * Adds a poi to the list of pois to display in the map
-     * @param Exceptional_APoi $poi
+     * The routes of the map
+     * @var Exceptional_Route[]
      */
-    public function AddPoi(Exceptional_APoi $poi = NULL)
+    private $_routes;
+    
+    protected function __construct()
+    {
+        parent::__construct();
+        
+        $this->_pois = [];
+        $this->_routes = [];
+    }
+
+    /**
+     * Adds a poi to the list of pois to display in the map
+     * @param Exceptional_Poi $poi
+     */
+    public function AddPoi(Exceptional_Poi $poi = NULL)
     {
         if (!is_null($poi))
         {
@@ -24,11 +38,19 @@ class Exceptional_Maps extends Exceptional_APresentationController
         }
     }
     
+    public function AddRoute(Exceptional_Route $route = NULL)
+    {
+        if (!is_null($route))
+        {
+            $this->_routes[] = $route;
+        }        
+    }
+
     /**
      * Displays the map using the registered Template Engine
      */
     public function DisplayMap()
     {
-        $this->_template->DisplayMap($this->_pois);
+        $this->_template->DisplayMap($this->_pois, $this->_routes);
     }
 }

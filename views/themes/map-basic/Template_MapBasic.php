@@ -4,10 +4,7 @@
  */
 class Template_MapBasic extends Exceptional_AMapsTemplate
 {
-    /**
-     * @param Exceptional_APoi[] $pois The map POIs
-     */
-    public function DisplayMap($pois)
+    public function DisplayMap($pois = array(), $routes = array())
     {?>
         <section class="exceptional-map"><?php
             foreach ($pois as $poi):?>

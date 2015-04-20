@@ -5,7 +5,9 @@
 abstract class Exceptional_AMapsTemplate extends Exceptional_ATemplate
 {
     /**
-     * @param Exceptional_APoi[] $pois The Pois to add to map
+     * Displays the map. Optionally adds markers and routes
+     * @param Exceptional_Poi[] $pois The Pois to add to map
+     * @param Exceptional_Route[] $routes The routes to add to map
      */
-    abstract public function DisplayMap($pois);
+    abstract public function DisplayMap($pois = array(), $routes = array());
 }
