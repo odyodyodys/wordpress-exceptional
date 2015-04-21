@@ -148,7 +148,7 @@ abstract class Exceptional_AFilter
     {
         foreach ($this->Terms as $term)
         {
-            if ($termSlug === $term->Slug && $term->SetChecked($state, $termSlug) === Exceptional_CheckState::Checked)
+            if ($term->SetChecked($state, $termSlug))
             {
                 // the value in the term has been applied, the filter is now applied
                 $this->IsApplied = true;                
