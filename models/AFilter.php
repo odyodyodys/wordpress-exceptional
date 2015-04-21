@@ -148,7 +148,7 @@ abstract class Exceptional_AFilter
     {
         foreach ($this->Terms as $term)
         {
-            if ($term->SetChecked($state, $termSlug))
+            if ($term->SetCheckedState($state, $termSlug))
             {
                 // the value in the term has been applied, the filter is now applied
                 $this->IsApplied = true;                
@@ -156,7 +156,7 @@ abstract class Exceptional_AFilter
             else if ($this->Operator === Exceptional_FilterOperator::_SINGLE)
             {
                 // if on single filter operator we mustn't break when term is found. Its also needed to set all other terms as not applied
-                $term->SetChecked(Exceptional_CheckState::Unchecked);
+                $term->SetCheckedState(Exceptional_CheckState::Unchecked);
             }
         }
     }

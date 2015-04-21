@@ -49,7 +49,7 @@ abstract class Exceptional_AFilterTerm
      * @param string $slug The slug of the term set the applied value
      * @return bool When slug is supplied returns true if a term with that slug exists, if slug is not supplied returns true
      */
-    public function SetChecked($checkedState, $slug = '')
+    public function SetCheckedState($checkedState, $slug = '')
     {
         $success = false;
         if ($this->Slug === $slug || empty($slug))
@@ -62,7 +62,7 @@ abstract class Exceptional_AFilterTerm
             {
                 foreach ($this->Children as $childTerm)
                 {
-                    $childTerm->SetChecked(Exceptional_CheckState::Unchecked);
+                    $childTerm->SetCheckedState(Exceptional_CheckState::Unchecked);
                 }
             }
         }
@@ -71,7 +71,7 @@ abstract class Exceptional_AFilterTerm
             // its not the parent, search in children
             foreach ($this->Children as $childTerm)
             {
-                if($childTerm->SetChecked($checkedState, $slug) && $checkedState === Exceptional_CheckState::Checked)
+                if($childTerm->SetCheckedState($checkedState, $slug) && $checkedState === Exceptional_CheckState::Checked)
                 {
                     // the child is the target, update self to intermediate
                     $this->_checkedState = Exceptional_CheckState::Intermediate;
