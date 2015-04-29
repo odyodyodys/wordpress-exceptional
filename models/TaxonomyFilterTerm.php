@@ -5,7 +5,7 @@
 class Exceptional_TaxonomyFilterTerm extends Exceptional_AFilterTerm
 {
     // The wordpress native term object
-    private $_nativeTerm;
+    public $NativeTerm;
     public $Id;
     public $Name;    
     public $Description;
@@ -16,7 +16,7 @@ class Exceptional_TaxonomyFilterTerm extends Exceptional_AFilterTerm
         
         if (!is_null($nativeTerm))
         {
-            $this->_nativeTerm = $nativeTerm;
+            $this->NativeTerm = $nativeTerm;
             $this->Id = $nativeTerm->term_id;
             $this->Name = $nativeTerm->name;
             $this->Slug = $nativeTerm->slug;

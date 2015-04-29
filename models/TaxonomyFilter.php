@@ -26,7 +26,7 @@ class Exceptional_TaxonomyFilter extends Exceptional_AFilter
         $this->Taxonomy = $taxonomy;
                 
         // init my terms
-        $this->Terms = array();        
+        $this->Terms = array();
         $nativeTerms = get_categories(array( 'taxonomy' => $taxonomy, 'hide_empty' => 0, 'hierarchical' => 1 ));
         
         // Index all terms by parent id, for easy lookup later
@@ -59,7 +59,20 @@ class Exceptional_TaxonomyFilter extends Exceptional_AFilter
             {
                 $this->TermChildrenHierarchical($termsByParent, $termsByParent[$childId], $childTerm->Children);
             }
-            $childBag[$childId] = $childTerm;
+            $this->AddTerm($childBag, $childTerm);
+        }
+    }
+    
+    /**
+     * Adds a term to an array of terms.
+     * @param array $terms Where to add the term
+     * @param Exceptional_TaxonomyFilterTerm $term The term to add
+     */
+    private function AddTerm(&$terms, $term)
+    {
+        if (apply_filters('Exceptional_ShouldAddFilterTerm', $term) instanceof Exceptional_AFilterTerm)
+        {
+            $terms[$term->Id] = $term;
         }
     }
 
