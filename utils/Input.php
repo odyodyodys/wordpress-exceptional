@@ -28,4 +28,21 @@ class Exceptional_Input
         }
         return $url;
     }
+    
+    /**
+     * Concatenates words in a human friendly form.
+     * Example: array(bananas, apples, oranges) outputs 'bananas, apples and oranges'
+     * http://stackoverflow.com/a/8586179/245495
+     * @param array $words The words to implode
+     * @param string $separator The separator between items. Only the character without spaces
+     * @param string $lastSeparator The separator between the last two terms. Only character without spaces
+     * @return string The result
+     */
+    static function LexicalImplode($words, $separator = ',', $lastSeparator = 'and')
+    {
+        $last  = array_slice($words, -1);
+        $first = join("$separator ", array_slice($words, 0, -1));
+        $both  = array_filter(array_merge(array($first), $last));
+        return join(" $lastSeparator ", $both);
+    }
 }

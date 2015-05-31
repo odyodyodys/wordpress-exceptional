@@ -294,6 +294,7 @@ class Exceptional_Filtering extends Exceptional_APresentationController
      * Gets a filter by its property value. The available properties are: (Name|Slug)
      * @param string $value The value of the filter
      * @param string $var The property of the filter to compare value to
+     * @return Exceptional_AFilter|null Matching filter or null
      */
     public function GetFilter($value, $var = 'Slug')
     {
