@@ -2,7 +2,7 @@
   Plugin Name:  Exceptional
   Plugin URI:   http://odysonline.gr
   Description:  Adds the Exceptional modules
-  Version:      0.38.0
+  Version:      0.39.0
   Author:       Odys
   Author URI:   http://odysonline.gr
 */
@@ -37,7 +37,7 @@ class Exceptional_Runtime extends Exceptional_AController
         // Eg: When the Exceptional_Seo class is used, it searches for Seo.php inside all the PluginPaths.
         
         // Paths with classes sorted as most used to less used to optimize search speed
-        $this->_pluginPaths = array('controllers/', 'models/', 'utils/', 'views/templates/', '/');
+        $this->_pluginPaths = array('controllers/', 'models/', 'utils/', 'controllers/seo/', 'views/templates/', '/');
         $this->_basePath = plugin_dir_path(__FILE__);
         // register autoloader
         spl_autoload_register(array($this, 'Autoloader'));

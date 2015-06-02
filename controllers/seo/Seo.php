@@ -2,7 +2,7 @@
 /**
  * Class Exceptional_Seo
  * 
- * The SEO related stuff
+ * Generic SEO related stuff
  */
 class Exceptional_Seo extends Exceptional_AController
 {
@@ -16,6 +16,9 @@ class Exceptional_Seo extends Exceptional_AController
 
     public function Init()
     {
+        // init subcontrollers
+        Exceptional_OpenGraph::Instance()->Init();
+        
         $this->_charMapping = array(
             // greek consonants
             'β' => 'v', 'γ' => 'g', 'δ' => 'd', 'ζ' => 'z', 'θ' => 'th', 'κ' => 'k', 'λ' => 'l', 'μ' => 'm', 'ν' => 'n', 'ξ' => 'ks', 'π' => 'p', 'ρ' => 'r', 'σ' => 's', 'τ' => 't', 'φ' => 'f', 'χ' => 'x', 'ψ' => 'ps',
