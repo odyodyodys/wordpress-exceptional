@@ -154,7 +154,7 @@ class Exceptional_Filtering extends Exceptional_APresentationController
      */
     public function GetUrlBase()
     {
-        if (is_post_type_archive())
+        if (is_post_type_archive() && !isset($this->BaseUrl))
         {
             global $wp_query;
             $base = get_post_type_archive_link($wp_query->query['post_type']);
