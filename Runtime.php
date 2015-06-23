@@ -2,7 +2,7 @@
   Plugin Name:  Exceptional
   Plugin URI:   http://odysonline.gr
   Description:  Adds the Exceptional modules
-  Version:      0.39.0
+  Version:      0.40.0
   Author:       Odys
   Author URI:   http://odysonline.gr
 */
@@ -47,6 +47,7 @@ class Exceptional_Runtime extends Exceptional_AController
         
         // init modules
         Exceptional_Seo::Instance()->Init();
+        Exceptional_Navigation::Instance()->Init();
     }
     
     // METHODS
