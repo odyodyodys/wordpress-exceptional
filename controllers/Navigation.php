@@ -6,9 +6,9 @@
  */
 class Exceptional_Navigation extends Exceptional_AController
 {
-    public function __construct()
+    protected function __construct()
     {
-        
+        parent::__construct();
     }
     
     public function Init()
@@ -29,10 +29,10 @@ class Exceptional_Navigation extends Exceptional_AController
             if(preg_match($pattern, $atts['href'], $matches) && strpos($atts['href'], '?') === FALSE && strpos($atts['href'], '&') === FALSE && strpos($atts['href'], '=') === FALSE)
             {
                 $atts['href'] = trailingslashit($atts['href']);
-            }            
+            }
             
-            $atts['href'] = esc_url(home_url($atts['href']));            
-        }        
+            $atts['href'] = esc_url(site_url($atts['href']));
+        }
         
         return $atts;
     }
