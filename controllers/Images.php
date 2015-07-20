@@ -69,6 +69,11 @@ class Exceptional_Images extends Exceptional_AController
         // instead of calling wp_get_attachment_src multiple times, get all results and just construct results
         $picDir = dirname(wp_get_attachment_url($id));        
         $picMeta = wp_get_attachment_metadata($id, true);
+        if (empty($picMeta))
+        {
+            // no attachment
+            return;
+        }
         $defaultSizeFile = basename($picMeta['file']);
         
         // get image data (src, width, height) for registered size. Note: many breaking points might use the same image size.
