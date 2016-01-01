@@ -5,7 +5,7 @@
 abstract class Exceptional_MapTemplateEngine extends Exceptional_TemplateEngineBase
 {
     /**
-     * @param Exceptional_APoi[] $pois The Pois to add to map
+     * @param Exceptional_Poi[] $pois The Pois to add to map
      */
     abstract public function DisplayMap($pois);
 }
