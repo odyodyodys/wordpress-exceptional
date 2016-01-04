@@ -33,22 +33,22 @@ class Exceptional_OpenGraph extends Exceptional_AController
     {?>
         <meta property="fb:app_id" content="<?php echo $appId; ?>"/>
         <meta property="og:site_name" content="<?php echo get_bloginfo('name'); ?>" />
-        <meta property="og:title" content="<?php echo $title; ?>" />
-        <meta property="og:description" content="<?php echo $description; ?>" />
+        <meta property="og:title" content="<?php echo esc_attr($title); ?>" />
+        <meta property="og:description" content="<?php echo esc_attr($description); ?>" />
         <meta property="og:type" content="<?php echo $type; ?>" /><?php
         if (!empty($images)):
             foreach ($images as $image):?>
-                <meta property="og:image" content="<?php echo $image; ?>" /><?php
+                <meta property="og:image" content="<?php echo esc_attr($image); ?>" /><?php
             endforeach;
         endif;?>
-        <meta property="og:url" content="<?php echo $canonicalUrl; ?>" />
+        <meta property="og:url" content="<?php echo esc_attr($canonicalUrl); ?>" />
         <meta property="og:locale" content="<?php echo $locale; ?>" /><?php
         foreach ($altLocals as $altLoc):?>
             <meta property="og:locale:alternate" content="<?php echo $altLoc ?>" /><?php
         endforeach;
         if (!empty($customProperties)):
             foreach ($customProperties as $property => $content):?>
-                <meta property="<?php echo $property;?>" content="<?php echo $content;?>" /><?php
+            <meta property="<?php echo esc_attr($property);?>" content="<?php echo esc_attr($content);?>" /><?php
             endforeach;
         endif;
     }
