@@ -6,6 +6,11 @@
  */
 class Exceptional_String
 {
+    public static function Contains($heystack, $needle)
+    {
+        return strpos($heystack, $needle) !== false;
+    }
+
     public static function StartsWith($haystack, $needle)
     {
         return (substr($haystack, 0, strlen($needle)) === $needle);
