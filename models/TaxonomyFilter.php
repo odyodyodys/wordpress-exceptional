@@ -52,14 +52,17 @@ class Exceptional_TaxonomyFilter extends Exceptional_AFilter
      */
     public function TermChildrenHierarchical(&$termsByParent, &$childrenOfParent, &$childBag)
     {
-        foreach ($childrenOfParent as $childTerm)
+        if (is_array($childrenOfParent))
         {
-            $childId = $childTerm->Id;
-            if (array_key_exists($childId, $termsByParent))
+            foreach ($childrenOfParent as $childTerm)
             {
-                $this->TermChildrenHierarchical($termsByParent, $termsByParent[$childId], $childTerm->Children);
+                $childId = $childTerm->Id;
+                if (array_key_exists($childId, $termsByParent))
+                {
+                    $this->TermChildrenHierarchical($termsByParent, $termsByParent[$childId], $childTerm->Children);
+                }
+                $this->AddTerm($childBag, $childTerm);
             }
-            $this->AddTerm($childBag, $childTerm);
         }
     }
     
