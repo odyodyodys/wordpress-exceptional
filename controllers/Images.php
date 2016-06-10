@@ -113,7 +113,7 @@ class Exceptional_Images extends Exceptional_AController
             // force IE9 to recognise the <source> tags?>
             <!--[if IE 9]><video style="display: none;"><![endif]--><?php
             foreach ($this->_sizes as $key => $value):?>
-                <source srcset="<?php echo $imageData[$value];?>" media="<?php echo $this->_breakingPointQueries[$key]; ?>"><?php
+                <source srcset="<?php echo $imageData[$value];?>" media="<?php echo $this->_breakingPointQueries[$key]; ?>"/><?php
             endforeach;?>
             <!--[if IE 9]></video><![endif]--><?php
             // fallback image?>
